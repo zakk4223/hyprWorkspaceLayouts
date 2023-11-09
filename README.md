@@ -45,7 +45,7 @@ workspace_layout=special:hiddenyaoi,nstack #named special
 
 ```
 monitor_layout=DP-1,master #monitor name
-monitor_laoyt=desc:SDC 0x05234,dwindle #monitor description
+monitor_layout=desc:SDC 0x05234,dwindle #monitor description
 ```
 
 ## Dispatcher
