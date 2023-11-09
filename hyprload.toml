@@ -1,0 +1,10 @@
+[hyprWorkspaceLayouts]
+description = "Per workspace tiling layouts"
+version = "1.0.0"
+author = "zakk4223"
+
+[hyprWorkspaceLayouts.build]
+output = "workspaceLayouts.so"
+steps = [
+    "make install",
+]
