@@ -36,7 +36,7 @@ namespace {
 		std::string name = "";
 		std::string wsStr = removeBeginEndSpacesTabs(vars[0]);
 		int id = getWorkspaceIDFromString(wsStr, name);
-		if (id != INT_MAX) {
+		if (id != WORKSPACE_INVALID) {
 			g_pWorkspaceLayout->setWorkspaceMapEntry(name,removeBeginEndSpacesTabs(vars[1])); 
 		} else {
 			Debug::log(LOG, "WSLAYOUT: Workspace layout rule name {} is invalid", vars[0]);
