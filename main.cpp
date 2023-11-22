@@ -24,6 +24,9 @@ namespace {
 		g_pWorkspaceLayout->setupWorkspace(pWorkspace);
 	}
 	
+	void WSLayoutsChanged() {
+		g_pWorkspaceLayout->onEnable();
+	}
 	
 	void onMonitorLayout(const std::string& k, const std::string& v) {
 		CVarList vars(v);
@@ -53,6 +56,28 @@ namespace {
 		WSWorkspaceCreated(ret);
 		return ret;
 	}
+
+
+	inline CFunctionHook *g_pAddLayoutHook = nullptr;
+	typedef bool(*origAddLayout)(void *, const std::string&, IHyprLayout *layout); 
+	
+	bool hkAddLayout(void *thisptr, const std::string& name, IHyprLayout *layout) {
+	
+		bool ret = (*(origAddLayout)g_pAddLayoutHook->m_pOriginal)(thisptr, name, layout);
+		WSLayoutsChanged();
+		
+		return ret;
+	}
+
+	inline CFunctionHook *g_pRemoveLayoutHook = nullptr;
+	typedef bool(*origRemoveLayout)(void *, IHyprLayout *layout); 
+	
+	bool hkRemoveLayout(void *thisptr, IHyprLayout *layout) {
+	
+		bool ret = (*(origRemoveLayout)g_pRemoveLayoutHook->m_pOriginal)(thisptr,layout);
+		WSLayoutsChanged();
+		return ret;
+	}
 }
 
 
@@ -67,11 +92,18 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, WSCREATEMETHODS[0].address, (void *)&hkCreateWorkspace);
 	g_pCreateWorkspaceHook->hook();
 
+		static const auto ADDLAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "addLayout");
+		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, ADDLAYOUTMETHODS[0].address, (void *)&hkAddLayout);
+	g_pCreateWorkspaceHook->hook();
+
+		static const auto REMOVELAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "removeLayout");
+		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, REMOVELAYOUTMETHODS[0].address, (void *)&hkRemoveLayout);
+	g_pCreateWorkspaceHook->hook();
+
 		
 		HyprlandAPI::registerCallbackDynamic(PHANDLE, "preConfigReload", [&](void *self, SCallbackInfo&, std::any data) {WSConfigPreload();});
 
 		HyprlandAPI::registerCallbackDynamic(PHANDLE, "configReloaded", [&](void *self, SCallbackInfo&, std::any data) {WSConfigReloaded();});
-		//HyprlandAPI::registerCallbackDynamic(PHANDLE, "createWorkspace", [&](void *self, SCallbackInfo &, std::any data) {WSWorkspaceCreated(std::any_cast<CWorkspace *>(data));});
 		g_pWorkspaceLayout = std::make_unique<CWorkspaceLayout>();
 		HyprlandAPI::addLayout(PHANDLE, "workspacelayout", g_pWorkspaceLayout.get());
 		HyprlandAPI::reloadConfig();
