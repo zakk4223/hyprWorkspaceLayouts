@@ -75,6 +75,8 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		HyprlandAPI::registerCallbackDynamic(PHANDLE, "configReloaded", [&](void *self, SCallbackInfo&, std::any data) {WSConfigReloaded();});
 		g_pWorkspaceLayout = std::make_unique<CWorkspaceLayout>();
 		HyprlandAPI::addLayout(PHANDLE, "workspacelayout", g_pWorkspaceLayout.get());
+		//Always set a default layout. It is possible other layouts are added before the reload config ticks.
+		g_pWorkspaceLayout->setDefaultLayout("dwindle");
 		HyprlandAPI::reloadConfig();
 		
 		static const auto ADDLAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "addLayout");
