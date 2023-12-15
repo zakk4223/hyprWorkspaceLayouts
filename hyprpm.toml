@@ -1,0 +1,11 @@
+[repository]
+name = "hyprWorkspaceLayouts"
+authors = ["Zakk"]
+
+[hyprXPrimary]
+description = "Use different layouts on workspaces"
+authors = ["Zakk"]
+output = "workspaceLayoutPlugin.so"
+build = [
+	"make all"
+]
