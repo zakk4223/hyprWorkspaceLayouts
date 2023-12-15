@@ -2,7 +2,7 @@
 name = "hyprWorkspaceLayouts"
 authors = ["Zakk"]
 
-[hyprXPrimary]
+[hyprWorkspaceLayouts]
 description = "Use different layouts on workspaces"
 authors = ["Zakk"]
 output = "workspaceLayoutPlugin.so"
