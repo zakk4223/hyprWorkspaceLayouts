@@ -1,14 +1,16 @@
 #pragma once
 
-#include "globals.hpp"
-#include <hyprland/src/layout/IHyprLayout.hpp>
-#include <hyprland/src//layout/DwindleLayout.hpp>
-#include <hyprland/src/layout/MasterLayout.hpp>
+#include <hyprland/src/includes.hpp>
 #include <string>
 #include <vector>
 #include <list>
 #include <deque>
 #include <any>
+#define private public
+#include <hyprland/src/managers/LayoutManager.hpp>
+#undef private
+#include <hyprland/src/layout/IHyprLayout.hpp>
+#include "globals.hpp"
 
 //orientation determines which side of the screen the master area resides
 struct SWorkspaceLayoutData {
@@ -20,32 +22,6 @@ struct SWorkspaceLayoutData {
     bool               operator==(const SWorkspaceLayoutData& rhs) const {
         return workspaceID == rhs.workspaceID;
     }
-};
-
-
-class CWorkspaceLayoutHackLayoutManager {
-  public:
-    CWorkspaceLayoutHackLayoutManager();
-
-    IHyprLayout* getCurrentLayout();
-
-    void         switchToLayout(std::string);
-
-    bool         addLayout(const std::string& name, IHyprLayout* layout);
-    bool         removeLayout(IHyprLayout* layout);
-
-    enum HYPRLAYOUTS
-    {
-        LAYOUT_DWINDLE = 0,
-        LAYOUT_MASTER
-    };
-
-    int                                               m_iCurrentLayoutID = LAYOUT_DWINDLE;
-
-    CHyprDwindleLayout                                m_cDwindleLayout;
-    CHyprMasterLayout                                 m_cMasterLayout;
-
-    std::vector<std::pair<std::string, IHyprLayout*>> m_vLayouts;
 };
 
 
@@ -84,16 +60,12 @@ class CWorkspaceLayout : public IHyprLayout {
     virtual void requestFocusForWindow(CWindow*);
 
 		void setDefaultLayout(std::string name);
-		void setWorkspaceMapEntry(std::string, std::string);
-		void setMonitorMapEntry(std::string, std::string);
 		void clearLayoutMaps();
 		void setupWorkspace(CWorkspace *pWorkspace);
 
 
 
   private:
-		std::vector<std::pair<std::string, std::string>> m_vWorkspaceLayoutMap;
-		std::vector<std::pair<std::string, std::string>> m_vMonitorLayoutMap;
 		std::vector<SWorkspaceLayoutData> m_vWorkspacesData;
 		IHyprLayout *getLayoutForWorkspace(const int& ws);
 		void setLayoutForWorkspace(IHyprLayout *layout, CWorkspace *pWorkspace, bool isDefault);

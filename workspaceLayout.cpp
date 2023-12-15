@@ -310,24 +310,11 @@ void CWorkspaceLayout::requestFocusForWindow(CWindow* pWindow) {
 
 IHyprLayout *CWorkspaceLayout::findUserLayoutForWorkspace(CWorkspace *pWorkspace) {
 	std::string retName = "";
-		const auto WORKSPACEIDSTR = std::to_string(pWorkspace->m_iID);
-		const auto ENTRY = std::find_if(m_vWorkspaceLayoutMap.begin(), m_vWorkspaceLayoutMap.end(), [&](const auto& m) {
-			return m.first == pWorkspace->m_szName ||
-							(pWorkspace->m_bIsSpecialWorkspace && m.first.starts_with("special:") && m.first.substr(8) == pWorkspace->m_szName) || (pWorkspace->m_iID > 0 && WORKSPACEIDSTR == m.first);
-			
-		});
-
-		if (ENTRY == m_vWorkspaceLayoutMap.end()) {
-			const auto PMONITOR = g_pCompositor->getMonitorFromID(pWorkspace->m_iMonitorID);
-			const auto MONITORNAME = PMONITOR->szName;
-			std::string MONITORDESC = PMONITOR->output->description ? PMONITOR->output->description : "";
-
-			const auto MENTRY = std::find_if(m_vMonitorLayoutMap.begin(), m_vMonitorLayoutMap.end(), [&](const auto& m) { return m.first == MONITORNAME || (m.first.starts_with("desc:") && (m.first.substr(5) == MONITORDESC || m.first.substr(5) == removeBeginEndSpacesTabs(MONITORDESC.substr(0,MONITORDESC.find_first_of('('))))); });
-			if (MENTRY != m_vMonitorLayoutMap.end()) { retName = MENTRY->second; }
-		} else {
-			retName = ENTRY->second;
+		const auto wsrule = g_pConfigManager->getWorkspaceRuleFor(pWorkspace);
+		const auto layoutopts = wsrule.layoutopts;
+		if (layoutopts.contains("wslayout-layout")) {
+			retName = layoutopts.at("wslayout-layout");
 		}
-
 		return getLayoutByName(retName);
 }
 
@@ -400,34 +387,14 @@ void CWorkspaceLayout::setDefaultLayout(std::string name) {
 
 
 IHyprLayout *CWorkspaceLayout::getLayoutByName(const std::string& name) {
-	CWorkspaceLayoutHackLayoutManager *layoutmgr = reinterpret_cast<CWorkspaceLayoutHackLayoutManager*>(g_pLayoutManager.get());
-	for (auto &layoutp : layoutmgr->m_vLayouts) {
-		if(layoutp.first == name)
+	for (auto &layoutp : g_pLayoutManager->m_vLayouts) {
+		if(layoutp.first == name) {
 			return layoutp.second;
+		}
 	}
 	return nullptr;
 }
 
-void CWorkspaceLayout::setWorkspaceMapEntry(std::string wsStr, std::string layoutName) {
-	const auto EN = std::find_if(m_vWorkspaceLayoutMap.begin(), m_vWorkspaceLayoutMap.end(), [&](const auto& other) {return other.first == wsStr; });
-	if (EN == m_vWorkspaceLayoutMap.end()) {
-		m_vWorkspaceLayoutMap.emplace_back(std::make_pair<>(wsStr, layoutName));
-	} else {
-		EN->second = layoutName;
-	}
-}
-
-void CWorkspaceLayout::setMonitorMapEntry(std::string monStr, std::string layoutName) {
-	const auto EN = std::find_if(m_vWorkspaceLayoutMap.begin(), m_vMonitorLayoutMap.end(), [&](const auto& other) {return other.first == monStr; });
-	if (EN == m_vMonitorLayoutMap.end()) {
-		m_vMonitorLayoutMap.emplace_back(std::make_pair<>(monStr, layoutName));
-	} else {
-		EN->second = layoutName;
-	}
-}
-
 void CWorkspaceLayout::clearLayoutMaps() {
-		m_vWorkspaceLayoutMap.clear();
-		m_vMonitorLayoutMap.clear();
 }
 

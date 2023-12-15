@@ -28,25 +28,6 @@ namespace {
 		g_pWorkspaceLayout->onEnable();
 	}
 	
-	void onMonitorLayout(const std::string& k, const std::string& v) {
-		CVarList vars(v);
-		std::string monStr = removeBeginEndSpacesTabs(vars[0]);
-		g_pWorkspaceLayout->setMonitorMapEntry(monStr,removeBeginEndSpacesTabs(vars[1])); 
-	}
-	
-	void onWorkspaceLayout(const std::string& k, const std::string& v) {
-		CVarList vars(v);
-		std::string name = "";
-		std::string wsStr = removeBeginEndSpacesTabs(vars[0]);
-		int id = getWorkspaceIDFromString(wsStr, name);
-		if (id != WORKSPACE_INVALID) {
-			g_pWorkspaceLayout->setWorkspaceMapEntry(name,removeBeginEndSpacesTabs(vars[1])); 
-		} else {
-			Debug::log(LOG, "WSLAYOUT: Workspace layout rule name {} is invalid", vars[0]);
-		}
-	}
-	
-	
 	inline CFunctionHook *g_pCreateWorkspaceHook = nullptr;
 	typedef CWorkspace*(*origCreateWorkspace)(void *, const int&, const int&, const std::string&);
 	
@@ -84,23 +65,11 @@ namespace {
 APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
     PHANDLE = handle;
 
-		HyprlandAPI::addConfigKeyword(PHANDLE, "workspace_layout", [&](const std::string& k, const std::string& v) {onWorkspaceLayout(k,v);});
-		HyprlandAPI::addConfigKeyword(PHANDLE, "monitor_layout", [&](const std::string& k, const std::string& v) {onMonitorLayout(k,v);});
-
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:wslayout:default_layout", SConfigValue{.strValue = "dwindle"});
 		static const auto WSCREATEMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "createNewWorkspace");
 		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, WSCREATEMETHODS[0].address, (void *)&hkCreateWorkspace);
 	g_pCreateWorkspaceHook->hook();
 
-		static const auto ADDLAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "addLayout");
-		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, ADDLAYOUTMETHODS[0].address, (void *)&hkAddLayout);
-	g_pCreateWorkspaceHook->hook();
-
-		static const auto REMOVELAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "removeLayout");
-		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, REMOVELAYOUTMETHODS[0].address, (void *)&hkRemoveLayout);
-	g_pCreateWorkspaceHook->hook();
-
-		
 		HyprlandAPI::registerCallbackDynamic(PHANDLE, "preConfigReload", [&](void *self, SCallbackInfo&, std::any data) {WSConfigPreload();});
 
 		HyprlandAPI::registerCallbackDynamic(PHANDLE, "configReloaded", [&](void *self, SCallbackInfo&, std::any data) {WSConfigReloaded();});
@@ -108,6 +77,13 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		HyprlandAPI::addLayout(PHANDLE, "workspacelayout", g_pWorkspaceLayout.get());
 		HyprlandAPI::reloadConfig();
 		
+		static const auto ADDLAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "addLayout");
+		g_pAddLayoutHook = HyprlandAPI::createFunctionHook(PHANDLE, ADDLAYOUTMETHODS[0].address, (void *)&hkAddLayout);
+		g_pAddLayoutHook->hook();
+
+		static const auto REMOVELAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "removeLayout");
+		g_pRemoveLayoutHook = HyprlandAPI::createFunctionHook(PHANDLE, REMOVELAYOUTMETHODS[0].address, (void *)&hkRemoveLayout);
+		g_pRemoveLayoutHook->hook();
     return {"Workspace layouts", "Per-workspace layouts", "Zakk", "1.0"};
 }
 
