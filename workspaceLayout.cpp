@@ -344,7 +344,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 		if (w.workspaceID == ws) {
 			if (w.layout) {
 				for (auto &win : g_pCompositor->m_vWindows) {
-					if ((win->m_iWorkspaceID != ws) || !win->m_bMappedX11 || !win->m_bIsMapped || win->isHidden())
+					if ((win->m_iWorkspaceID != ws) || !win->m_bIsMapped || win->isHidden())
 						continue;
 					w.layout->onWindowRemoved(win.get());
 				}
@@ -353,7 +353,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 			w.layout = layout;
 			w.isDefault = isDefault;
 			for (auto &win : g_pCompositor->m_vWindows) {
-				if ((win->m_iWorkspaceID != ws) || !win->m_bMappedX11 || !win->m_bIsMapped || win->isHidden())
+				if ((win->m_iWorkspaceID != ws) || !win->m_bIsMapped || win->isHidden())
 					continue;
 				w.layout->onWindowCreated(win.get());
 			}
@@ -366,7 +366,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 	WSENTRY->layout = layout;
 	WSENTRY->isDefault = isDefault;
 	for (auto &win : g_pCompositor->m_vWindows) {
-		if ((win->m_iWorkspaceID != ws) || !win->m_bMappedX11 || !win->m_bIsMapped || win->isHidden())
+		if ((win->m_iWorkspaceID != ws) || !win->m_bIsMapped || win->isHidden())
 			continue;
 		WSENTRY->layout->onWindowCreated(win.get());
 	}

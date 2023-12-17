@@ -3,6 +3,11 @@
 
 Do you wish you could run different window tiling layouts on individual workspaces? Or on specific monitors? Lucky you, that plugin lets you do that!
 
+## Using hyprpm, Hyprland's official plugin manager (recommended)
+1. Run `hyprpm add https://github.com/zakk4223/hyprWorkspaceLayouts` and wait for hyprpm to build the plugin.
+2. Run `hyprpm enable hyprWorkspaceLayouts`
+
+
 ## Using [hyprload](https://github.com/Duckonaut/hyprload)
 Add the line `"zakk4223/hyprWorkspaceLayouts",` to your `hyprload.toml` config, like this
 
