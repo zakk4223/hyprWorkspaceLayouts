@@ -93,21 +93,25 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 	g_pCreateWorkspaceHook->hook();
 
 		static const auto ADDLAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "addLayout");
-		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, ADDLAYOUTMETHODS[0].address, (void *)&hkAddLayout);
-	g_pCreateWorkspaceHook->hook();
+		g_pAddLayoutHook = HyprlandAPI::createFunctionHook(PHANDLE, ADDLAYOUTMETHODS[0].address, (void *)&hkAddLayout);
+	g_pAddLayoutHook->hook();
 
 		static const auto REMOVELAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "removeLayout");
-		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, REMOVELAYOUTMETHODS[0].address, (void *)&hkRemoveLayout);
-	g_pCreateWorkspaceHook->hook();
+		g_pRemoveLayoutHook = HyprlandAPI::createFunctionHook(PHANDLE, REMOVELAYOUTMETHODS[0].address, (void *)&hkRemoveLayout);
+	g_pRemoveLayoutHook->hook();
 
 		
 		HyprlandAPI::registerCallbackDynamic(PHANDLE, "preConfigReload", [&](void *self, SCallbackInfo&, std::any data) {WSConfigPreload();});
 
 		HyprlandAPI::registerCallbackDynamic(PHANDLE, "configReloaded", [&](void *self, SCallbackInfo&, std::any data) {WSConfigReloaded();});
 		g_pWorkspaceLayout = std::make_unique<CWorkspaceLayout>();
+
+        // set default layout, because that will be used by the calls below, when adding itself as a layout or loading the config
+        g_pWorkspaceLayout->setDefaultLayout("dwindle");
+
 		HyprlandAPI::addLayout(PHANDLE, "workspacelayout", g_pWorkspaceLayout.get());
-		HyprlandAPI::reloadConfig();
-		
+		HyprlandAPI::reloadConfig(); // here the actual default layout will be read
+
     return {"Workspace layouts", "Per-workspace layouts", "Zakk", "1.0"};
 }
 
