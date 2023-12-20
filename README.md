@@ -1,7 +1,7 @@
 # Workspace and monitor specific window layouts for Hyprland 
 
 
-Do you wish you could run different window tiling layouts on individual workspaces? Or on specific monitors? Lucky you, that plugin lets you do that!
+Do you wish you could run different window tiling layouts on individual workspaces?
 
 ## Using hyprpm, Hyprland's official plugin manager (recommended)
 1. Run `hyprpm add https://github.com/zakk4223/hyprWorkspaceLayouts` and wait for hyprpm to build the plugin.
@@ -39,20 +39,21 @@ plugin {
 If you don't set one, "dwindle" is used.
 
 
-Configure workspace and monitor specific layouts:
-
+Set your global layout to 'workspacelayout'
 ```
-workspace_layout=1,master #workspace id
-workspace_layout=name:badanime,dwindle #named workspace
-workspace_layout=special,dwindle #special
-workspace_layout=special:hiddenyaoi,nstack #named special
+general {
+    layout=workspacelayout
+}
 ```
 
-```
-monitor_layout=DP-1,master #monitor name
-monitor_layout=desc:SDC 0x05234,dwindle #monitor description
-```
+Configure workspace specific layouts
 
+```
+workspace=1,layoutopt:wslayout-layout:master #workspace id
+workspace=name:badanime,layoutopt:wslayout-layout:dwindle #named workspace
+workspace=special,layoutopt:wslayout-layout:dwindle #special
+workspace=special:hiddenyaoi,layoutopt:wslayout-layout:nstack #named special
+```
 ## Dispatcher
 You can dynamically change the layout of the currently active workspace
 via a dispatcher.
@@ -61,3 +62,5 @@ via a dispatcher.
 hyprctl dispatch layoutmsg setlayout dwindle
 ```
 
+## Per monitor layouts
+If you want to configure a layout for each monitor, consider using one of my other plugins: [hyprland-workspace-rules](https://github.com/zakk4223/hyprland-workspace-rules)
