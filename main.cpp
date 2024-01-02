@@ -79,10 +79,12 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		g_pWorkspaceLayout->setDefaultLayout("dwindle");
 		HyprlandAPI::reloadConfig();
 		
+		Debug::log(LOG, "HOOKING ADDLAYOUT");
 		static const auto ADDLAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "addLayout");
 		g_pAddLayoutHook = HyprlandAPI::createFunctionHook(PHANDLE, ADDLAYOUTMETHODS[0].address, (void *)&hkAddLayout);
 		g_pAddLayoutHook->hook();
 
+		Debug::log(LOG, "HOOKING REMOVELAYOUT");
 		static const auto REMOVELAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "removeLayout");
 		g_pRemoveLayoutHook = HyprlandAPI::createFunctionHook(PHANDLE, REMOVELAYOUTMETHODS[0].address, (void *)&hkRemoveLayout);
 		g_pRemoveLayoutHook->hook();

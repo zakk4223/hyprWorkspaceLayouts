@@ -1,6 +1,10 @@
 [repository]
 name = "hyprWorkspaceLayouts"
 authors = ["Zakk"]
+commit_pins = [
+	["03ebbe18ed8517ee22591eac82cd54322f42cb7d", "4721b6433d4cdab52153e22300081127398d3199"]
+]
+
 
 [hyprWorkspaceLayouts]
 description = "Use different layouts on workspaces"
