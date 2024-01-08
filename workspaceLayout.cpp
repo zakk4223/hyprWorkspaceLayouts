@@ -131,9 +131,16 @@ void CWorkspaceLayout::onBeginDragWindow() {
 	if (!pWindow) return; //??
 	auto const WSID = pWindow->m_iWorkspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
-	if (layout)
-		return layout->onBeginDragWindow();
+	if (layout) {
+        	layout->onBeginDragWindow();
 
+        	m_vBeginDragXY = layout->m_vBeginDragXY;
+        	m_vBeginDragPositionXY = layout->m_vBeginDragPositionXY;
+        	m_vBeginDragSizeXY = layout->m_vBeginDragSizeXY;
+        	m_vLastDragXY = layout->m_vLastDragXY;
+        	m_vDraggingWindowOriginalFloatSize = layout->m_vDraggingWindowOriginalFloatSize;
+        	m_eGrabbedCorner = layout->m_eGrabbedCorner;
+    	}
 }
 
 void CWorkspaceLayout::resizeActiveWindow(const Vector2D& vec, eRectCorner corner, CWindow* pWindow) {
@@ -160,9 +167,17 @@ void CWorkspaceLayout::onEndDragWindow() {
 	if (!pWindow) return; //??
 	auto const WSID = pWindow->m_iWorkspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
-	if (layout)
-		return layout->onEndDragWindow();
 
+	if (layout) {
+        	layout->m_vBeginDragXY = m_vBeginDragXY;
+        	layout->m_vBeginDragPositionXY = m_vBeginDragPositionXY;
+        	layout->m_vBeginDragSizeXY = m_vBeginDragSizeXY;
+        	layout->m_vLastDragXY = m_vLastDragXY;
+        	layout->m_vDraggingWindowOriginalFloatSize = m_vDraggingWindowOriginalFloatSize;
+        	layout->m_eGrabbedCorner = m_eGrabbedCorner;
+
+        	return layout->onEndDragWindow();
+    	}
 }
 
 void CWorkspaceLayout::onMouseMove(const Vector2D& vec) {
@@ -170,8 +185,17 @@ void CWorkspaceLayout::onMouseMove(const Vector2D& vec) {
 	if (!pWindow) return; //??
 	auto const WSID = pWindow->m_iWorkspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
-	if (layout)
-		return layout->onMouseMove(vec);
+
+	if (layout) {
+        	layout->m_vBeginDragXY = m_vBeginDragXY;
+        	layout->m_vBeginDragPositionXY = m_vBeginDragPositionXY;
+        	layout->m_vBeginDragSizeXY = m_vBeginDragSizeXY;
+        	layout->m_vLastDragXY = m_vLastDragXY;
+        	layout->m_vDraggingWindowOriginalFloatSize = m_vDraggingWindowOriginalFloatSize;
+        	layout->m_eGrabbedCorner = m_eGrabbedCorner;
+
+        	return layout->onMouseMove(vec);
+    	}
 }
 
 void CWorkspaceLayout::fullscreenRequestForWindow(CWindow* pWindow, eFullscreenMode fsMode, bool force) {
