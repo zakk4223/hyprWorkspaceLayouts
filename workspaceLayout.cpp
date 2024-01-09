@@ -194,7 +194,9 @@ void CWorkspaceLayout::onMouseMove(const Vector2D& vec) {
         	layout->m_vDraggingWindowOriginalFloatSize = m_vDraggingWindowOriginalFloatSize;
         	layout->m_eGrabbedCorner = m_eGrabbedCorner;
 
-        	return layout->onMouseMove(vec);
+        	layout->onMouseMove(vec);
+
+        	m_vLastDragXY = layout->m_vLastDragXY;
     	}
 }
 
