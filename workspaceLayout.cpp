@@ -3,6 +3,19 @@
 #include <hyprland/src/managers/LayoutManager.hpp>
 
 
+SWorkspaceLayoutWindowData* CWorkspaceLayout::getDataFromWindow(CWindow* pWindow) {
+    for (auto& nd : m_vWorkspaceWindowData) {
+        if (nd.pWindow == pWindow)
+            return &nd;
+    }
+
+		//Create it if we don't have it, using the window's current workspaceID.
+	 	const auto WINDOWDATA = &m_vWorkspaceWindowData.emplace_back();
+		WINDOWDATA->pWindow = pWindow;
+		WINDOWDATA->workspaceID = pWindow->m_iWorkspaceID;
+		return WINDOWDATA;
+}
+
 void CWorkspaceLayout::setupWorkspace(CWorkspace *pWorkspace) {
 	if (!pWorkspace) {
 		//??
@@ -37,7 +50,8 @@ void CWorkspaceLayout::onDisable() {
 void CWorkspaceLayout::onWindowCreated(CWindow* pWindow, eDirection direction) {
 
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto WDATA = getDataFromWindow(pWindow);
+	auto const WSID = WDATA->workspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout) {
 		return layout->onWindowCreated(pWindow, direction);
@@ -48,7 +62,8 @@ void CWorkspaceLayout::onWindowCreated(CWindow* pWindow, eDirection direction) {
 
 void CWorkspaceLayout::onWindowCreatedTiling(CWindow* pWindow, eDirection direction) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto WDATA = getDataFromWindow(pWindow);
+	auto const WSID = WDATA->workspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout) {
 		return layout->onWindowCreatedTiling(pWindow, direction);
@@ -58,7 +73,8 @@ void CWorkspaceLayout::onWindowCreatedTiling(CWindow* pWindow, eDirection direct
 void CWorkspaceLayout::onWindowCreatedFloating(CWindow* pWindow) {
 
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto WDATA = getDataFromWindow(pWindow);
+	auto const WSID = WDATA->workspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->onWindowCreatedFloating(pWindow);
@@ -76,28 +92,42 @@ bool CWorkspaceLayout::isWindowTiled(CWindow* pWindow) {
 
 void CWorkspaceLayout::onWindowRemoved(CWindow* pWindow) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto WDATA = getDataFromWindow(pWindow);
+	auto const WSID = WDATA->workspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
-	if (layout)
+	if (layout) {
+		if (WDATA) //??
+			m_vWorkspaceWindowData.remove(*WDATA);
 		return layout->onWindowRemoved(pWindow);
+	}
 
 }
 
 void CWorkspaceLayout::onWindowRemovedTiling(CWindow* pWindow) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto WDATA = getDataFromWindow(pWindow);
+	auto const WSID = WDATA->workspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
+	{
+		if (WDATA) //??
+			m_vWorkspaceWindowData.remove(*WDATA);
+
 		return layout->onWindowRemovedTiling(pWindow);
+	}
 
 }
 
 void CWorkspaceLayout::onWindowRemovedFloating(CWindow* pWindow) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto WDATA = getDataFromWindow(pWindow);
+	auto const WSID = WDATA->workspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
-	if (layout)
+	if (layout) {
+		if (WDATA) //??
+			m_vWorkspaceWindowData.remove(*WDATA);
 		return layout->onWindowRemovedFloating(pWindow);
+	}
 
 }
 

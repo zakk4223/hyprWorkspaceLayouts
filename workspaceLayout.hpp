@@ -12,7 +12,15 @@
 #include <hyprland/src/layout/IHyprLayout.hpp>
 #include "globals.hpp"
 
-//orientation determines which side of the screen the master area resides
+struct SWorkspaceLayoutWindowData {
+	CWindow *pWindow = nullptr;
+	int workspaceID = -1;
+    bool operator==(const SWorkspaceLayoutWindowData& rhs) const {
+        return pWindow == rhs.pWindow;
+    }
+};
+
+
 struct SWorkspaceLayoutData {
     int                workspaceID = -1;
     IHyprLayout *      layout = nullptr;
@@ -67,6 +75,8 @@ class CWorkspaceLayout : public IHyprLayout {
 
   private:
 		std::vector<SWorkspaceLayoutData> m_vWorkspacesData;
+		std::list<SWorkspaceLayoutWindowData> m_vWorkspaceWindowData;
+    SWorkspaceLayoutWindowData* getDataFromWindow(CWindow*);
 		IHyprLayout *getLayoutForWorkspace(const int& ws);
 		void setLayoutForWorkspace(IHyprLayout *layout, CWorkspace *pWorkspace, bool isDefault);
 		void setLayoutForWorkspace(IHyprLayout *layout, const int& ws, bool isDefault = false);
@@ -75,4 +85,5 @@ class CWorkspaceLayout : public IHyprLayout {
 		IHyprLayout												*m_pDefaultLayout = nullptr;
 
     friend struct SWorkspaceLayoutData;
+    friend struct SWorkspaceLayoutWindowData;
 };
