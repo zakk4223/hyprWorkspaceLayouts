@@ -66,7 +66,7 @@ void CWorkspaceLayout::onWindowCreatedTiling(CWindow* pWindow, eDirection direct
 	auto const WSID = WDATA->workspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout) {
-		return layout->onWindowCreatedTiling(pWindow, direction);
+		layout->onWindowCreatedTiling(pWindow, direction);
 	}
 }
 
@@ -113,7 +113,7 @@ void CWorkspaceLayout::onWindowRemovedTiling(CWindow* pWindow) {
 		if (WDATA) //??
 			m_vWorkspaceWindowData.remove(*WDATA);
 
-		return layout->onWindowRemovedTiling(pWindow);
+		layout->onWindowRemovedTiling(pWindow);
 	}
 
 }
@@ -133,9 +133,20 @@ void CWorkspaceLayout::onWindowRemovedFloating(CWindow* pWindow) {
 
 void CWorkspaceLayout::recalculateMonitor(const int& monID) {
 	const auto PMONITOR = g_pCompositor->getMonitorFromID(monID);
+	if (!PMONITOR)
+		return;
+
+	if (PMONITOR->specialWorkspaceID) {
+		const auto PSPWS = g_pCompositor->getWorkspaceByID(PMONITOR->specialWorkspaceID);
+		if (PSPWS) {
+			IHyprLayout *layout = getLayoutForWorkspace(PSPWS->m_iID);
+			if (layout)
+				return layout->recalculateMonitor(monID);
+		}
+	}
 	const auto PWORKSPACE = g_pCompositor->getWorkspaceByID(PMONITOR->activeWorkspace);
 	if (!PWORKSPACE) return;
-	IHyprLayout *layout = getLayoutForWorkspace(PMONITOR->activeWorkspace);
+	IHyprLayout *layout = getLayoutForWorkspace(PWORKSPACE->m_iID);
 	if (layout)
 		return layout->recalculateMonitor(monID);
 }
