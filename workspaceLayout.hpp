@@ -76,7 +76,7 @@ class CWorkspaceLayout : public IHyprLayout {
   private:
 		std::vector<SWorkspaceLayoutData> m_vWorkspacesData;
 		std::list<SWorkspaceLayoutWindowData> m_vWorkspaceWindowData;
-    SWorkspaceLayoutWindowData* getDataFromWindow(CWindow*);
+    SWorkspaceLayoutWindowData* getDataFromWindow(CWindow*, bool create=true);
 		IHyprLayout *getLayoutForWorkspace(const int& ws);
 		void setLayoutForWorkspace(IHyprLayout *layout, CWorkspace *pWorkspace, bool isDefault);
 		void setLayoutForWorkspace(IHyprLayout *layout, const int& ws, bool isDefault = false);
