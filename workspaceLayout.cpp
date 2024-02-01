@@ -430,7 +430,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 			for (auto &win : g_pCompositor->m_vWindows) {
 				if ((win->m_iWorkspaceID != ws) || !win->m_bIsMapped || win->isHidden())
 					continue;
-				w.layout->onWindowCreated(win.get());
+				onWindowCreated(win.get());
 			}
 			return;
 		}
