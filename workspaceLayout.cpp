@@ -5,8 +5,9 @@
 
 SWorkspaceLayoutWindowData* CWorkspaceLayout::getDataFromWindow(CWindow* pWindow, bool create) {
     for (auto& nd : m_vWorkspaceWindowData) {
-        if (nd.pWindow == pWindow)
+        if (nd.pWindow == pWindow) {
             return &nd;
+				}
     }
 
 		//Create it if we don't have it, using the window's current workspaceID.
@@ -227,7 +228,12 @@ void CWorkspaceLayout::onEndDragWindow() {
         	layout->m_vDraggingWindowOriginalFloatSize = m_vDraggingWindowOriginalFloatSize;
         	layout->m_eGrabbedCorner = m_eGrabbedCorner;
 
-        	return layout->onEndDragWindow();
+        	layout->onEndDragWindow();
+					auto WDATA = getDataFromWindow(pWindow);
+					if (WDATA) {
+							//The layout's onEndDragWindow called onWindowCreatedTiling internally. Update our map to reflect the new workspace for the window)
+							WDATA->workspaceID = WSID;
+					}
     	}
 }
 
