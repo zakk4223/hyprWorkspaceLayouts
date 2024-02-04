@@ -101,8 +101,7 @@ bool CWorkspaceLayout::isWindowTiled(CWindow* pWindow) {
 void CWorkspaceLayout::onWindowRemoved(CWindow* pWindow) {
 	if (!pWindow) return; //??
 	auto WDATA = getDataFromWindow(pWindow, false);
-	if (!WDATA) return;
-	auto const WSID = WDATA->workspaceID;
+	auto const WSID = WDATA ? WDATA->workspaceID : pWindow->m_iWorkspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout) {
 		if (WDATA) //??
@@ -115,8 +114,7 @@ void CWorkspaceLayout::onWindowRemoved(CWindow* pWindow) {
 void CWorkspaceLayout::onWindowRemovedTiling(CWindow* pWindow) {
 	if (!pWindow) return; //??
 	auto WDATA = getDataFromWindow(pWindow, false);
-	if (!WDATA) return;
-	auto const WSID = WDATA->workspaceID;
+	auto const WSID = WDATA ? WDATA->workspaceID : pWindow->m_iWorkspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 	{
