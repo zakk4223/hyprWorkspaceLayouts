@@ -15,9 +15,11 @@ namespace {
 	
 	
 	void WSConfigReloaded() {
-		static SConfigValue *DEFAULTLAYOUT = HyprlandAPI::getConfigValue(PHANDLE, "plugin:wslayout:default_layout");
+
+		
+		static auto* const DEFAULTLAYOUT = (Hyprlang::STRING const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:wslayout:default_layout")->getDataStaticPtr();
 		if (g_pWorkspaceLayout)
-			g_pWorkspaceLayout->setDefaultLayout(DEFAULTLAYOUT->strValue);
+			g_pWorkspaceLayout->setDefaultLayout(*DEFAULTLAYOUT);
 	}
 	
 	void WSWorkspaceCreated(CWorkspace *pWorkspace) {
@@ -69,7 +71,7 @@ namespace {
 APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
     PHANDLE = handle;
 
-		HyprlandAPI::addConfigValue(PHANDLE, "plugin:wslayout:default_layout", SConfigValue{.strValue = "dwindle"});
+		HyprlandAPI::addConfigValue(PHANDLE, "plugin:wslayout:default_layout", Hyprlang::STRING{"dwindle"});
 		static const auto WSCREATEMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "createNewWorkspace");
 		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, WSCREATEMETHODS[0].address, (void *)&hkCreateWorkspace);
 	g_pCreateWorkspaceHook->hook();
