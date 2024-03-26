@@ -194,20 +194,22 @@ void CWorkspaceLayout::onBeginDragWindow() {
 }
 
 void CWorkspaceLayout::resizeActiveWindow(const Vector2D& vec, eRectCorner corner, CWindow* pWindow) {
-	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	const auto PWINDOW = pWindow ? pWindow : g_pCompositor->m_pLastWindow;
+	if (!PWINDOW) return; //??
+	auto const WSID = PWINDOW->m_iWorkspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
-		return layout->resizeActiveWindow(vec, corner, pWindow);
+		return layout->resizeActiveWindow(vec, corner, PWINDOW);
 
 }
 
 void CWorkspaceLayout::moveActiveWindow(const Vector2D& vec, CWindow* pWindow) {
-	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	const auto PWINDOW = pWindow ? pWindow : g_pCompositor->m_pLastWindow;
+	if (!PWINDOW) return; //??
+	auto const WSID = PWINDOW->m_iWorkspaceID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
-		return layout->moveActiveWindow(vec, pWindow);
+		return layout->moveActiveWindow(vec, PWINDOW);
 
 }
 
