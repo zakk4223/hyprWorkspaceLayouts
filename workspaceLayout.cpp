@@ -1,5 +1,7 @@
 #include "workspaceLayout.hpp"
+#include "globals.hpp"
 #include <hyprland/src/Compositor.hpp>
+#include <hyprland/src/desktop/DesktopTypes.hpp>
 #include <hyprland/src/managers/LayoutManager.hpp>
 
 
@@ -15,12 +17,12 @@ SWorkspaceLayoutWindowData* CWorkspaceLayout::getDataFromWindow(CWindow* pWindow
 		if (create) {
 	 		WINDOWDATA = &m_vWorkspaceWindowData.emplace_back();
 			WINDOWDATA->pWindow = pWindow;
-			WINDOWDATA->workspaceID = pWindow->m_iWorkspaceID;
+			WINDOWDATA->workspaceID = pWindow->workspaceID();
 		} 
 		return WINDOWDATA; 
 }
 
-void CWorkspaceLayout::setupWorkspace(CWorkspace *pWorkspace) {
+void CWorkspaceLayout::setupWorkspace(PHLWORKSPACE pWorkspace) {
 	if (!pWorkspace) {
 		//??
 		return;
@@ -37,7 +39,7 @@ void CWorkspaceLayout::setupWorkspace(CWorkspace *pWorkspace) {
 void CWorkspaceLayout::onEnable() {
 
 	for (auto &wsp : g_pCompositor->m_vWorkspaces) {
-		setupWorkspace(wsp.get());
+		setupWorkspace(wsp);
 	}
 }
 
@@ -90,7 +92,7 @@ void CWorkspaceLayout::onWindowCreatedFloating(CWindow* pWindow) {
 
 bool CWorkspaceLayout::isWindowTiled(CWindow* pWindow) {
 	if (!pWindow) return false; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->isWindowTiled(pWindow);
@@ -101,7 +103,7 @@ bool CWorkspaceLayout::isWindowTiled(CWindow* pWindow) {
 void CWorkspaceLayout::onWindowRemoved(CWindow* pWindow) {
 	if (!pWindow) return; //??
 	auto WDATA = getDataFromWindow(pWindow, false);
-	auto const WSID = WDATA ? WDATA->workspaceID : pWindow->m_iWorkspaceID;
+	auto const WSID = WDATA ? WDATA->workspaceID : pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout) {
 		if (WDATA) //??
@@ -114,7 +116,7 @@ void CWorkspaceLayout::onWindowRemoved(CWindow* pWindow) {
 void CWorkspaceLayout::onWindowRemovedTiling(CWindow* pWindow) {
 	if (!pWindow) return; //??
 	auto WDATA = getDataFromWindow(pWindow, false);
-	auto const WSID = WDATA ? WDATA->workspaceID : pWindow->m_iWorkspaceID;
+	auto const WSID = WDATA ? WDATA->workspaceID : pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 	{
@@ -145,15 +147,15 @@ void CWorkspaceLayout::recalculateMonitor(const int& monID) {
 	if (!PMONITOR)
 		return;
 
-	if (PMONITOR->specialWorkspaceID) {
-		const auto PSPWS = g_pCompositor->getWorkspaceByID(PMONITOR->specialWorkspaceID);
+	if (PMONITOR->activeSpecialWorkspace) {
+		const auto PSPWS = PMONITOR->activeSpecialWorkspace;
 		if (PSPWS) {
 			IHyprLayout *layout = getLayoutForWorkspace(PSPWS->m_iID);
 			if (layout)
 				return layout->recalculateMonitor(monID);
 		}
 	}
-	const auto PWORKSPACE = g_pCompositor->getWorkspaceByID(PMONITOR->activeWorkspace);
+	const auto PWORKSPACE = PMONITOR->activeWorkspace;
 	if (!PWORKSPACE) return;
 	IHyprLayout *layout = getLayoutForWorkspace(PWORKSPACE->m_iID);
 	if (layout)
@@ -162,7 +164,7 @@ void CWorkspaceLayout::recalculateMonitor(const int& monID) {
 
 void CWorkspaceLayout::recalculateWindow(CWindow* pWindow) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->recalculateWindow(pWindow);
@@ -170,7 +172,7 @@ void CWorkspaceLayout::recalculateWindow(CWindow* pWindow) {
 
 void CWorkspaceLayout::changeWindowFloatingMode(CWindow* pWindow) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->changeWindowFloatingMode(pWindow);
@@ -179,7 +181,7 @@ void CWorkspaceLayout::changeWindowFloatingMode(CWindow* pWindow) {
 void CWorkspaceLayout::onBeginDragWindow() {
   const auto pWindow = g_pInputManager->currentlyDraggedWindow;
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout) {
         	layout->onBeginDragWindow();
@@ -196,7 +198,7 @@ void CWorkspaceLayout::onBeginDragWindow() {
 void CWorkspaceLayout::resizeActiveWindow(const Vector2D& vec, eRectCorner corner, CWindow* pWindow) {
 	const auto PWINDOW = pWindow ? pWindow : g_pCompositor->m_pLastWindow;
 	if (!PWINDOW) return; //??
-	auto const WSID = PWINDOW->m_iWorkspaceID;
+	auto const WSID = PWINDOW->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->resizeActiveWindow(vec, corner, PWINDOW);
@@ -206,7 +208,7 @@ void CWorkspaceLayout::resizeActiveWindow(const Vector2D& vec, eRectCorner corne
 void CWorkspaceLayout::moveActiveWindow(const Vector2D& vec, CWindow* pWindow) {
 	const auto PWINDOW = pWindow ? pWindow : g_pCompositor->m_pLastWindow;
 	if (!PWINDOW) return; //??
-	auto const WSID = PWINDOW->m_iWorkspaceID;
+	auto const WSID = PWINDOW->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->moveActiveWindow(vec, PWINDOW);
@@ -217,7 +219,7 @@ void CWorkspaceLayout::onEndDragWindow() {
 
   const auto pWindow = g_pInputManager->currentlyDraggedWindow;
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 
 	if (layout) {
@@ -240,7 +242,7 @@ void CWorkspaceLayout::onEndDragWindow() {
 void CWorkspaceLayout::onMouseMove(const Vector2D& vec) {
   const auto pWindow = g_pInputManager->currentlyDraggedWindow;
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 
 	if (layout) {
@@ -259,7 +261,7 @@ void CWorkspaceLayout::onMouseMove(const Vector2D& vec) {
 
 void CWorkspaceLayout::fullscreenRequestForWindow(CWindow* pWindow, eFullscreenMode fsMode, bool force) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->fullscreenRequestForWindow(pWindow, fsMode, force);
@@ -276,7 +278,7 @@ std::any CWorkspaceLayout::layoutMessage(SLayoutMessageHeader header, std::strin
     auto command = vars[0];
 
 		const auto PWINDOW = header.pWindow;
-		auto const WSID = PWINDOW->m_iWorkspaceID;
+		auto const WSID = PWINDOW->workspaceID();
 		if (command == "setlayout" && (vars.size() == 2)) {
 			IHyprLayout *layout = getLayoutByName(vars[1]);
 			if (layout) {
@@ -296,7 +298,7 @@ std::any CWorkspaceLayout::layoutMessage(SLayoutMessageHeader header, std::strin
 SWindowRenderLayoutHints CWorkspaceLayout::requestRenderHints(CWindow* pWindow) {
 	SWindowRenderLayoutHints hints;
 	if (!pWindow) return hints; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->requestRenderHints(pWindow);
@@ -306,7 +308,7 @@ SWindowRenderLayoutHints CWorkspaceLayout::requestRenderHints(CWindow* pWindow) 
 Vector2D CWorkspaceLayout::predictSizeForNewWindowTiled() {
 	if (!g_pCompositor->m_pLastMonitor)
 		return {};
-	auto const WSID = g_pCompositor->m_pLastMonitor->activeWorkspace;
+	auto const WSID = g_pCompositor->m_pLastMonitor->activeWorkspace->m_iID;
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->predictSizeForNewWindowTiled();
@@ -316,7 +318,7 @@ Vector2D CWorkspaceLayout::predictSizeForNewWindowTiled() {
 void CWorkspaceLayout::switchWindows(CWindow* pWindow, CWindow* pWindow2) {
 
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->switchWindows(pWindow, pWindow2);
@@ -324,7 +326,7 @@ void CWorkspaceLayout::switchWindows(CWindow* pWindow, CWindow* pWindow2) {
 
 void CWorkspaceLayout::moveWindowTo(CWindow* pWindow, const std::string& direction) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->moveWindowTo(pWindow, direction);
@@ -334,7 +336,7 @@ void CWorkspaceLayout::moveWindowTo(CWindow* pWindow, const std::string& directi
 void CWorkspaceLayout::alterSplitRatio(CWindow* pWindow, float ratio, bool exact) {
 
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->alterSplitRatio(pWindow, ratio, exact);
@@ -346,7 +348,7 @@ std::string CWorkspaceLayout::getLayoutName() {
 
 CWindow* CWorkspaceLayout::getNextWindowCandidate(CWindow* pWindow) {
 	if (!pWindow) return nullptr; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->getNextWindowCandidate(pWindow);
@@ -357,7 +359,7 @@ CWindow* CWorkspaceLayout::getNextWindowCandidate(CWindow* pWindow) {
 void CWorkspaceLayout::onWindowFocusChange(CWindow* pWindow) {
 
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->onWindowFocusChange(pWindow);
@@ -365,7 +367,7 @@ void CWorkspaceLayout::onWindowFocusChange(CWindow* pWindow) {
 
 void CWorkspaceLayout::replaceWindowDataWith(CWindow* from, CWindow* to) {
 	if (!from) return; //??
-	auto const WSID = from->m_iWorkspaceID;
+	auto const WSID = from->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->replaceWindowDataWith(from, to);
@@ -374,7 +376,7 @@ void CWorkspaceLayout::replaceWindowDataWith(CWindow* from, CWindow* to) {
 
 bool CWorkspaceLayout::isWindowReachable(CWindow* pWindow) {
 	if (!pWindow) return false; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->isWindowReachable(pWindow);
@@ -384,7 +386,7 @@ bool CWorkspaceLayout::isWindowReachable(CWindow* pWindow) {
 
 void CWorkspaceLayout::bringWindowToTop(CWindow* pWindow) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->bringWindowToTop(pWindow);
@@ -393,7 +395,7 @@ void CWorkspaceLayout::bringWindowToTop(CWindow* pWindow) {
 
 void CWorkspaceLayout::requestFocusForWindow(CWindow* pWindow) {
 	if (!pWindow) return; //??
-	auto const WSID = pWindow->m_iWorkspaceID;
+	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
 		return layout->requestFocusForWindow(pWindow);
@@ -401,7 +403,7 @@ void CWorkspaceLayout::requestFocusForWindow(CWindow* pWindow) {
 }
 
 
-SWorkspaceRule getMergedWorkspaceRule(CWorkspace *workspace) {
+SWorkspaceRule getMergedWorkspaceRule(PHLWORKSPACE workspace) {
 	SWorkspaceRule retRule{};
 
 	retRule.isPersistent = false;
@@ -437,7 +439,7 @@ SWorkspaceRule getMergedWorkspaceRule(CWorkspace *workspace) {
 
 }
 
-IHyprLayout *CWorkspaceLayout::findUserLayoutForWorkspace(CWorkspace *pWorkspace) {
+IHyprLayout *CWorkspaceLayout::findUserLayoutForWorkspace(PHLWORKSPACE pWorkspace) {
 	std::string retName = "";
 		const auto wsrule = getMergedWorkspaceRule(pWorkspace);
 		const auto layoutopts = wsrule.layoutopts;
@@ -461,7 +463,7 @@ IHyprLayout *CWorkspaceLayout::getLayoutForWorkspace(const int &ws) {
 
 
 
-void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, CWorkspace *pWorkspace, bool isDefault) {
+void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, PHLWORKSPACE pWorkspace, bool isDefault) {
 
 	setLayoutForWorkspace(layout, pWorkspace->m_iID, isDefault);
 }
@@ -473,7 +475,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 		if (w.workspaceID == ws) {
 			if (w.layout) {
 				for (auto &win : g_pCompositor->m_vWindows) {
-					if ((win->m_iWorkspaceID != ws) || !win->m_bIsMapped || win->isHidden())
+					if ((win->workspaceID() != ws) || !win->m_bIsMapped || win->isHidden())
 						continue;
 					w.layout->onWindowRemoved(win.get());
 				}
@@ -482,7 +484,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 			w.layout = layout;
 			w.isDefault = isDefault;
 			for (auto &win : g_pCompositor->m_vWindows) {
-				if ((win->m_iWorkspaceID != ws) || !win->m_bIsMapped || win->isHidden())
+				if ((win->workspaceID() != ws) || !win->m_bIsMapped || win->isHidden())
 					continue;
 				onWindowCreated(win.get());
 			}
@@ -495,7 +497,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 	WSENTRY->layout = layout;
 	WSENTRY->isDefault = isDefault;
 	for (auto &win : g_pCompositor->m_vWindows) {
-		if ((win->m_iWorkspaceID != ws) || !win->m_bIsMapped || win->isHidden())
+		if ((win->workspaceID() != ws) || !win->m_bIsMapped || win->isHidden())
 			continue;
 		onWindowCreated(win.get());
 	}

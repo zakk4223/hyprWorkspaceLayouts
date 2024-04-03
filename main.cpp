@@ -1,8 +1,9 @@
-#include <hyprland/src/Compositor.hpp>
 #include "globals.hpp"
+#include <hyprland/src/Compositor.hpp>
 #include "workspaceLayout.hpp"
 
 
+#include <hyprland/src/desktop/DesktopTypes.hpp>
 #include <unistd.h>
 #include <thread>
 
@@ -22,7 +23,7 @@ namespace {
 			g_pWorkspaceLayout->setDefaultLayout(*DEFAULTLAYOUT);
 	}
 	
-	void WSWorkspaceCreated(CWorkspace *pWorkspace) {
+	void WSWorkspaceCreated(PHLWORKSPACE pWorkspace) {
 		g_pWorkspaceLayout->setupWorkspace(pWorkspace);
 	}
 	
@@ -31,11 +32,11 @@ namespace {
 	}
 	
 	inline CFunctionHook *g_pCreateWorkspaceHook = nullptr;
-	typedef CWorkspace*(*origCreateWorkspace)(void *, const int&, const int&, const std::string&);
+	typedef PHLWORKSPACE(*origCreateWorkspace)(void *, const int&, const int&, const std::string&);
 	
-	CWorkspace *hkCreateWorkspace(void *thisptr, const int& id, const int& monid, const std::string& name) {
+	PHLWORKSPACE hkCreateWorkspace(void *thisptr, const int& id, const int& monid, const std::string& name) {
 	
-		CWorkspace *ret = (*(origCreateWorkspace)g_pCreateWorkspaceHook->m_pOriginal)(thisptr, id, monid, name);
+		PHLWORKSPACE ret = (*(origCreateWorkspace)g_pCreateWorkspaceHook->m_pOriginal)(thisptr, id, monid, name);
 		WSWorkspaceCreated(ret);
 		return ret;
 	}

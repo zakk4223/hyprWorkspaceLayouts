@@ -1,5 +1,6 @@
 #pragma once
 
+#include <hyprland/src/desktop/DesktopTypes.hpp>
 #include <hyprland/src/includes.hpp>
 #include <string>
 #include <vector>
@@ -70,7 +71,7 @@ class CWorkspaceLayout : public IHyprLayout {
 
 		void setDefaultLayout(std::string name);
 		void clearLayoutMaps();
-		void setupWorkspace(CWorkspace *pWorkspace);
+		void setupWorkspace(PHLWORKSPACE pWorkspace);
 
 
 
@@ -79,9 +80,9 @@ class CWorkspaceLayout : public IHyprLayout {
 		std::list<SWorkspaceLayoutWindowData> m_vWorkspaceWindowData;
     SWorkspaceLayoutWindowData* getDataFromWindow(CWindow*, bool create=true);
 		IHyprLayout *getLayoutForWorkspace(const int& ws);
-		void setLayoutForWorkspace(IHyprLayout *layout, CWorkspace *pWorkspace, bool isDefault);
+		void setLayoutForWorkspace(IHyprLayout *layout, PHLWORKSPACE pWorkspace, bool isDefault);
 		void setLayoutForWorkspace(IHyprLayout *layout, const int& ws, bool isDefault = false);
-		IHyprLayout *findUserLayoutForWorkspace(CWorkspace *pWorkspace);
+		IHyprLayout *findUserLayoutForWorkspace(PHLWORKSPACE pWorkspace);
 		IHyprLayout *getLayoutByName(const std::string& name);
 		IHyprLayout												*m_pDefaultLayout = nullptr;
 
