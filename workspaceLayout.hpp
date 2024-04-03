@@ -66,6 +66,7 @@ class CWorkspaceLayout : public IHyprLayout {
     virtual bool isWindowReachable(CWindow*);
     virtual void bringWindowToTop(CWindow*);
     virtual void requestFocusForWindow(CWindow*);
+		virtual Vector2D predictSizeForNewWindowTiled();
 
 		void setDefaultLayout(std::string name);
 		void clearLayoutMaps();

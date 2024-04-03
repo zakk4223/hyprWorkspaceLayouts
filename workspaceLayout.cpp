@@ -303,6 +303,16 @@ SWindowRenderLayoutHints CWorkspaceLayout::requestRenderHints(CWindow* pWindow) 
 	return hints;
 }
 
+Vector2D CWorkspaceLayout::predictSizeForNewWindowTiled() {
+	if (!g_pCompositor->m_pLastMonitor)
+		return {};
+	auto const WSID = g_pCompositor->m_pLastMonitor->activeWorkspace;
+	IHyprLayout *layout = getLayoutForWorkspace(WSID);
+	if (layout)
+		return layout->predictSizeForNewWindowTiled();
+	return {};
+}
+
 void CWorkspaceLayout::switchWindows(CWindow* pWindow, CWindow* pWindow2) {
 
 	if (!pWindow) return; //??
@@ -391,9 +401,45 @@ void CWorkspaceLayout::requestFocusForWindow(CWindow* pWindow) {
 }
 
 
+SWorkspaceRule getMergedWorkspaceRule(CWorkspace *workspace) {
+	SWorkspaceRule retRule{};
+
+	retRule.isPersistent = false;
+	const auto WORKSPACERULES = g_pConfigManager->getWorkspaceRulesFor(workspace);
+	for (auto& wsrule  : WORKSPACERULES) {
+		if (wsrule.isPersistent)
+			retRule.isPersistent = true;
+		if (wsrule.gapsIn.has_value())
+			retRule.gapsIn = wsrule.gapsIn;
+		if (wsrule.gapsOut.has_value())
+			retRule.gapsOut = wsrule.gapsOut;
+		if (wsrule.borderSize.has_value())
+			retRule.borderSize = wsrule.borderSize;
+		if (wsrule.border.has_value())
+			retRule.border = wsrule.border;
+		if (wsrule.rounding.has_value())
+			retRule.rounding = wsrule.rounding;
+		if (wsrule.decorate.has_value())
+			retRule.decorate = wsrule.decorate;
+		if (wsrule.shadow.has_value())
+			retRule.shadow = wsrule.shadow;
+		if (wsrule.onCreatedEmptyRunCmd.has_value())
+			retRule.onCreatedEmptyRunCmd = wsrule.onCreatedEmptyRunCmd;
+
+		if (!wsrule.layoutopts.empty()) {
+			for (const auto &lopt : wsrule.layoutopts) {
+				retRule.layoutopts[lopt.first] = lopt.second;
+			}
+		}
+	}
+
+	return retRule;
+
+}
+
 IHyprLayout *CWorkspaceLayout::findUserLayoutForWorkspace(CWorkspace *pWorkspace) {
 	std::string retName = "";
-		const auto wsrule = g_pConfigManager->getWorkspaceRuleFor(pWorkspace);
+		const auto wsrule = getMergedWorkspaceRule(pWorkspace);
 		const auto layoutopts = wsrule.layoutopts;
 		if (layoutopts.contains("wslayout-layout")) {
 			retName = layoutopts.at("wslayout-layout");
