@@ -58,7 +58,7 @@ class CWorkspaceLayout : public IHyprLayout {
     virtual std::any layoutMessage(SLayoutMessageHeader, std::string);
     virtual SWindowRenderLayoutHints requestRenderHints(CWindow*);
     virtual void switchWindows(CWindow*, CWindow*);
-    virtual void moveWindowTo(CWindow*, const std::string& direction);
+    virtual void moveWindowTo(CWindow*, const std::string& direction, bool silent);
     virtual void alterSplitRatio(CWindow*, float, bool exact = false);
     virtual std::string getLayoutName();
     virtual CWindow* getNextWindowCandidate(CWindow*);

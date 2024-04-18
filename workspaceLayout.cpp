@@ -324,12 +324,12 @@ void CWorkspaceLayout::switchWindows(CWindow* pWindow, CWindow* pWindow2) {
 		return layout->switchWindows(pWindow, pWindow2);
 }
 
-void CWorkspaceLayout::moveWindowTo(CWindow* pWindow, const std::string& direction) {
+void CWorkspaceLayout::moveWindowTo(CWindow* pWindow, const std::string& direction, bool silent) {
 	if (!pWindow) return; //??
 	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
-		return layout->moveWindowTo(pWindow, direction);
+		return layout->moveWindowTo(pWindow, direction, silent);
 
 }
 
