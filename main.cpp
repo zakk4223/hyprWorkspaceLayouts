@@ -77,9 +77,9 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, WSCREATEMETHODS[0].address, (void *)&hkCreateWorkspace);
 	g_pCreateWorkspaceHook->hook();
 
-		HyprlandAPI::registerCallbackDynamic(PHANDLE, "preConfigReload", [&](void *self, SCallbackInfo&, std::any data) {WSConfigPreload();});
+		static auto PCRCB = HyprlandAPI::registerCallbackDynamic(PHANDLE, "preConfigReload", [&](void *self, SCallbackInfo&, std::any data) {WSConfigPreload();});
 
-		HyprlandAPI::registerCallbackDynamic(PHANDLE, "configReloaded", [&](void *self, SCallbackInfo&, std::any data) {WSConfigReloaded();});
+		static auto CRCB = HyprlandAPI::registerCallbackDynamic(PHANDLE, "configReloaded", [&](void *self, SCallbackInfo&, std::any data) {WSConfigReloaded();});
 		g_pWorkspaceLayout = std::make_unique<CWorkspaceLayout>();
 		HyprlandAPI::addLayout(PHANDLE, "workspacelayout", g_pWorkspaceLayout.get());
 		//Always set a default layout. It is possible other layouts are added before the reload config ticks.
