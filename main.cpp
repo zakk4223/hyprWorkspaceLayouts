@@ -9,7 +9,10 @@
 
 namespace {
 	inline std::unique_ptr<CWorkspaceLayout> g_pWorkspaceLayout; 
+  inline std::vector<IHyprLayout *> g_vLayoutList;
+
 	
+
 	void WSConfigPreload() {
 			g_pWorkspaceLayout->clearLayoutMaps();
 	}
@@ -19,8 +22,10 @@ namespace {
 
 		
 		static auto* const DEFAULTLAYOUT = (Hyprlang::STRING const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:wslayout:default_layout")->getDataStaticPtr();
-		if (g_pWorkspaceLayout)
+		if (g_pWorkspaceLayout) {
 			g_pWorkspaceLayout->setDefaultLayout(*DEFAULTLAYOUT);
+		  g_pWorkspaceLayout->setupLayoutList();
+		}
 	}
 	
 	void WSWorkspaceCreated(PHLWORKSPACE pWorkspace) {
@@ -28,6 +33,7 @@ namespace {
 	}
 	
 	void WSLayoutsChanged() {
+	  g_pWorkspaceLayout->setupLayoutList();
 		g_pWorkspaceLayout->onEnable();
 	}
 	
@@ -73,6 +79,8 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
     PHANDLE = handle;
 
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:wslayout:default_layout", Hyprlang::STRING{"dwindle"});
+	  HyprlandAPI::addConfigValue(PHANDLE, "plugin:wslayout:layouts", Hyprlang::STRING(""));
+	  
 		static const auto WSCREATEMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "createNewWorkspace");
 		g_pCreateWorkspaceHook = HyprlandAPI::createFunctionHook(PHANDLE, WSCREATEMETHODS[0].address, (void *)&hkCreateWorkspace);
 	g_pCreateWorkspaceHook->hook();

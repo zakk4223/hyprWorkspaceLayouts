@@ -285,6 +285,46 @@ std::any CWorkspaceLayout::layoutMessage(SLayoutMessageHeader header, std::strin
 				setLayoutForWorkspace(layout, WSID); 
 			}
 			return 0;
+	  } else if (command == "cyclelayout") {
+		  size_t layoutidx = 0;
+
+		  IHyprLayout *wslayout = getLayoutForWorkspace(WSID);
+
+		  for(size_t i = 0; i < m_vLayoutList.size(); i++) {
+			    if (m_vLayoutList[i] == wslayout) {
+				      layoutidx = i;
+				      break;
+			    }
+	  	}
+		  if (vars.size() == 1 || vars[1].contains("next")) {
+        layoutidx++;	    	      
+			} else if (vars.size() == 2 && vars[1].contains("prev")) {
+			  if (layoutidx == 0)
+			    layoutidx = m_vLayoutList.size()-1;
+			  else
+			    layoutidx--;
+			}
+		          
+		  if (layoutidx >= m_vLayoutList.size())
+		     layoutidx = 0;
+		  IHyprLayout *newLayout = m_vLayoutList[layoutidx];
+		  if (newLayout)
+		      setLayoutForWorkspace(newLayout, WSID);
+	  } else if (command == "togglelayout") {
+		  IHyprLayout *prevLayout = getPreviousLayoutForWorkspace(WSID);
+		  IHyprLayout *currLayout = getLayoutForWorkspace(WSID);
+		  IHyprLayout *newLayout = nullptr;
+		  if (vars.size() == 2) {
+		    newLayout = getLayoutByName(vars[1]);
+			  if (newLayout) {
+				    if (newLayout == currLayout)
+				      setLayoutForWorkspace(prevLayout, WSID);
+				    else
+				      setLayoutForWorkspace(newLayout, WSID);
+		    }
+			} else {
+	      setLayoutForWorkspace(prevLayout, WSID);
+	    }
 		} else {
 			IHyprLayout *layout = getLayoutForWorkspace(WSID);
 			if (layout)
@@ -414,6 +454,17 @@ IHyprLayout *CWorkspaceLayout::findUserLayoutForWorkspace(PHLWORKSPACE pWorkspac
 }
 
 
+IHyprLayout *CWorkspaceLayout::getPreviousLayoutForWorkspace(const int &ws) {
+
+	for (auto& w : m_vWorkspacesData) {
+		if (w.workspaceID == ws && w.layout)
+		{
+			return w.previousLayout;
+		}
+	}
+	return nullptr;
+}
+
 IHyprLayout *CWorkspaceLayout::getLayoutForWorkspace(const int &ws) {
 
 	for (auto& w : m_vWorkspacesData) {
@@ -435,6 +486,11 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, PHLWORKSPACE p
 
 
 void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws, bool isDefault) {
+	if (!layout)
+			return;
+	if (layout->getLayoutName() == getLayoutName())
+		return;
+
 	for (auto& w : m_vWorkspacesData) {
 		if (w.workspaceID == ws) {
 			if (w.layout) {
@@ -445,6 +501,8 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 				}
 			}
 
+		  if (w.layout)
+				w.previousLayout = w.layout;
 			w.layout = layout;
 			w.isDefault = isDefault;
 			for (auto &win : g_pCompositor->m_vWindows) {
@@ -491,5 +549,24 @@ IHyprLayout *CWorkspaceLayout::getLayoutByName(const std::string& name) {
 }
 
 void CWorkspaceLayout::clearLayoutMaps() {
+}
+
+void CWorkspaceLayout::setupLayoutList() {
+		static auto* const LAYOUTS = (Hyprlang::STRING const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:wslayout:layouts")->getDataStaticPtr();
+	  m_vLayoutList.clear();
+	  CVarList layoutlist(*LAYOUTS, 0, 's');
+	  for (size_t i = 0; i < layoutlist.size(); i++) {
+		    auto layoutName = layoutlist[i];
+		    IHyprLayout *layout = getLayoutByName(layoutName);
+		    if (layout && layout->getLayoutName() != getLayoutName())
+		        m_vLayoutList.push_back(layout);
+	  }
+
+	  if (!m_vLayoutList.size()) {
+        for (auto &layoutp : g_pLayoutManager->m_vLayouts) {
+		        if (layoutp.second->getLayoutName() != getLayoutName())
+                m_vLayoutList.push_back(layoutp.second);
+		    }
+	  }
 }
 

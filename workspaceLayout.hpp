@@ -25,6 +25,7 @@ struct SWorkspaceLayoutWindowData {
 struct SWorkspaceLayoutData {
     int                workspaceID = -1;
     IHyprLayout *      layout = nullptr;
+	  IHyprLayout *      previousLayout = nullptr;
 		bool							 isDefault = false;
 
 
@@ -72,6 +73,7 @@ class CWorkspaceLayout : public IHyprLayout {
 		void setDefaultLayout(std::string name);
 		void clearLayoutMaps();
 		void setupWorkspace(PHLWORKSPACE pWorkspace);
+		void         setupLayoutList();
 
 
 
@@ -80,11 +82,13 @@ class CWorkspaceLayout : public IHyprLayout {
 		std::list<SWorkspaceLayoutWindowData> m_vWorkspaceWindowData;
     SWorkspaceLayoutWindowData* getDataFromWindow(PHLWINDOW, bool create=true);
 		IHyprLayout *getLayoutForWorkspace(const int& ws);
+    IHyprLayout *getPreviousLayoutForWorkspace(const int &ws);
 		void setLayoutForWorkspace(IHyprLayout *layout, PHLWORKSPACE pWorkspace, bool isDefault);
 		void setLayoutForWorkspace(IHyprLayout *layout, const int& ws, bool isDefault = false);
 		IHyprLayout *findUserLayoutForWorkspace(PHLWORKSPACE pWorkspace);
 		IHyprLayout *getLayoutByName(const std::string& name);
 		IHyprLayout												*m_pDefaultLayout = nullptr;
+    std::vector<IHyprLayout *> m_vLayoutList;
 
     friend struct SWorkspaceLayoutData;
     friend struct SWorkspaceLayoutWindowData;
