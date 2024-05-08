@@ -197,7 +197,7 @@ void CWorkspaceLayout::onBeginDragWindow() {
 
 void CWorkspaceLayout::resizeActiveWindow(const Vector2D& vec, eRectCorner corner, PHLWINDOW pWindow) {
 	const auto PWINDOW = pWindow ? pWindow : g_pCompositor->m_pLastWindow.lock();
-	if (validMapped(PWINDOW)) return; //??
+	if (!validMapped(PWINDOW)) return; //??
 	auto const WSID = PWINDOW->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
