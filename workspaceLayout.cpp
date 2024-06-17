@@ -357,11 +357,32 @@ Vector2D CWorkspaceLayout::predictSizeForNewWindowTiled() {
 
 void CWorkspaceLayout::switchWindows(PHLWINDOW pWindow, PHLWINDOW pWindow2) {
 
-	if (!pWindow) return; //??
-	auto const WSID = pWindow->workspaceID();
-	IHyprLayout *layout = getLayoutForWorkspace(WSID);
-	if (layout)
-		return layout->switchWindows(pWindow, pWindow2);
+	if (!pWindow || !pWindow2) return; //??
+	auto const WSID1 = pWindow->workspaceID();
+	auto const WSID2 = pWindow2->workspaceID();
+	
+	IHyprLayout *layout1 = getLayoutForWorkspace(WSID1);
+	IHyprLayout *layout2 = getLayoutForWorkspace(WSID2);
+
+	if (layout1 == layout2)
+		return layout1->switchWindows(pWindow, pWindow2);
+
+	//Different layouts; hax
+	
+	std::swap(pWindow2->m_iMonitorID, pWindow->m_iMonitorID);
+	std::swap(pWindow2->m_pWorkspace, pWindow->m_pWorkspace);
+
+
+	pWindow->setAnimationsToMove();
+	pWindow2->setAnimationsToMove();
+
+	layout1->replaceWindowDataWith(pWindow, pWindow2);
+	layout2->replaceWindowDataWith(pWindow2, pWindow);
+  recalculateMonitor(pWindow->m_iMonitorID);
+	recalculateMonitor(pWindow2->m_iMonitorID);
+
+  g_pHyprRenderer->damageWindow(pWindow);
+  g_pHyprRenderer->damageWindow(pWindow2);
 }
 
 void CWorkspaceLayout::moveWindowTo(PHLWINDOW pWindow, const std::string& direction, bool silent) {
