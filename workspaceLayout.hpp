@@ -1,16 +1,19 @@
 #pragma once
 
-#include <hyprland/src/desktop/DesktopTypes.hpp>
 #include <hyprland/src/includes.hpp>
 #include <string>
 #include <vector>
 #include <list>
 #include <deque>
 #include <any>
+#include <sstream>
 #define private public
+#include <hyprland/src/Compositor.hpp>
+#include <hyprland/src/desktop/DesktopTypes.hpp>
+#include <hyprland/src/managers/LayoutManager.hpp>
+#include <hyprland/src/desktop/DesktopTypes.hpp>
 #include <hyprland/src/managers/LayoutManager.hpp>
 #undef private
-#include <hyprland/src/layout/IHyprLayout.hpp>
 #include "globals.hpp"
 
 struct SWorkspaceLayoutWindowData {

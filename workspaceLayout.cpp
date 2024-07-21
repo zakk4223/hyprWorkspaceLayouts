@@ -1,8 +1,4 @@
 #include "workspaceLayout.hpp"
-#include "globals.hpp"
-#include <hyprland/src/Compositor.hpp>
-#include <hyprland/src/desktop/DesktopTypes.hpp>
-#include <hyprland/src/managers/LayoutManager.hpp>
 
 
 SWorkspaceLayoutWindowData* CWorkspaceLayout::getDataFromWindow(PHLWINDOW pWindow, bool create) {
