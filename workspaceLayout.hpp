@@ -58,7 +58,7 @@ class CWorkspaceLayout : public IHyprLayout {
     virtual void moveActiveWindow(const Vector2D&, PHLWINDOW pWindow = nullptr);
     virtual void onEndDragWindow();
     virtual void onMouseMove(const Vector2D&);
-    virtual void fullscreenRequestForWindow(PHLWINDOW, eFullscreenMode, bool);
+    virtual void fullscreenRequestForWindow(PHLWINDOW pWindow, const eFullscreenMode CURRENT_EFFECTIVE_MODE, const eFullscreenMode EFFECTIVE_MODE);
     virtual std::any layoutMessage(SLayoutMessageHeader, std::string);
     virtual SWindowRenderLayoutHints requestRenderHints(PHLWINDOW);
     virtual void switchWindows(PHLWINDOW, PHLWINDOW);

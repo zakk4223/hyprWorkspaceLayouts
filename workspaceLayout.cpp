@@ -255,12 +255,12 @@ void CWorkspaceLayout::onMouseMove(const Vector2D& vec) {
     	}
 }
 
-void CWorkspaceLayout::fullscreenRequestForWindow(PHLWINDOW pWindow, eFullscreenMode fsMode, bool force) {
+void CWorkspaceLayout::fullscreenRequestForWindow(PHLWINDOW pWindow, const eFullscreenMode CURRENT_EFFECTIVE_MODE, const eFullscreenMode EFFECTIVE_MODE) {
 	if (!pWindow) return; //??
 	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
 	if (layout)
-		return layout->fullscreenRequestForWindow(pWindow, fsMode, force);
+		return layout->fullscreenRequestForWindow(pWindow, CURRENT_EFFECTIVE_MODE, EFFECTIVE_MODE);
 }
 
 std::any CWorkspaceLayout::layoutMessage(SLayoutMessageHeader header, std::string message) {
