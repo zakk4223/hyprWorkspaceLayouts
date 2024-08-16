@@ -50,7 +50,7 @@ class CWorkspaceLayout : public IHyprLayout {
     virtual void onWindowRemoved(PHLWINDOW);
     virtual void onWindowRemovedTiling(PHLWINDOW);
     virtual void onWindowRemovedFloating(PHLWINDOW);
-    virtual void recalculateMonitor(const int&);
+    virtual void recalculateMonitor(const MONITORID&);
     virtual void recalculateWindow(PHLWINDOW);
     virtual void changeWindowFloatingMode(PHLWINDOW);
     virtual void onBeginDragWindow();

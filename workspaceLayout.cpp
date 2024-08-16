@@ -138,7 +138,7 @@ void CWorkspaceLayout::onWindowRemovedFloating(PHLWINDOW pWindow) {
 
 }
 
-void CWorkspaceLayout::recalculateMonitor(const int& monID) {
+void CWorkspaceLayout::recalculateMonitor(const MONITORID& monID) {
 	const auto PMONITOR = g_pCompositor->getMonitorFromID(monID);
 	if (!PMONITOR)
 		return;
