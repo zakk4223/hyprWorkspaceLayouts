@@ -385,9 +385,18 @@ void CWorkspaceLayout::moveWindowTo(PHLWINDOW pWindow, const std::string& direct
 	if (!pWindow) return; //??
 	auto const WSID = pWindow->workspaceID();
 	IHyprLayout *layout = getLayoutForWorkspace(WSID);
-	if (layout)
-		return layout->moveWindowTo(pWindow, direction, silent);
+	if (layout) {
+		layout->moveWindowTo(pWindow, direction, silent);
 
+		auto const NEXTID = pWindow->workspaceID();
+		IHyprLayout *nextlayout = getLayoutForWorkspace(NEXTID);
+
+		// layout has changed -> readd
+		if (nextlayout && nextlayout != layout) {
+			layout->onWindowRemoved(pWindow);
+			nextlayout->onWindowCreated(pWindow);
+		}
+	}
 }
 
 void CWorkspaceLayout::alterSplitRatio(PHLWINDOW pWindow, float ratio, bool exact) {
