@@ -101,7 +101,7 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		static const auto REMOVELAYOUTMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "removeLayout");
 		g_pRemoveLayoutHook = HyprlandAPI::createFunctionHook(PHANDLE, REMOVELAYOUTMETHODS[0].address, (void *)&hkRemoveLayout);
 		g_pRemoveLayoutHook->hook();
-    return {"Workspace layouts", "Per-workspace layouts", "Zakk", "1.0"};
+    return {"hyprWorkspaceLayouts", "Per-workspace layouts", "Zakk", "1.0"};
 }
 
 // Do NOT change this function.
