@@ -365,7 +365,7 @@ void CWorkspaceLayout::switchWindows(PHLWINDOW pWindow, PHLWINDOW pWindow2) {
 
 	//Different layouts; hax
 	
-	std::swap(pWindow2->m_iMonitorID, pWindow->m_iMonitorID);
+	std::swap(pWindow2->m_pMonitor, pWindow->m_pMonitor);
 	std::swap(pWindow2->m_pWorkspace, pWindow->m_pWorkspace);
 
 
@@ -374,8 +374,8 @@ void CWorkspaceLayout::switchWindows(PHLWINDOW pWindow, PHLWINDOW pWindow2) {
 
 	layout1->replaceWindowDataWith(pWindow, pWindow2);
 	layout2->replaceWindowDataWith(pWindow2, pWindow);
-  recalculateMonitor(pWindow->m_iMonitorID);
-	recalculateMonitor(pWindow2->m_iMonitorID);
+  recalculateMonitor(pWindow->monitorID());
+	recalculateMonitor(pWindow2->monitorID());
 
   g_pHyprRenderer->damageWindow(pWindow);
   g_pHyprRenderer->damageWindow(pWindow2);
