@@ -11,8 +11,9 @@
 #include <hyprland/src/Compositor.hpp>
 #include <hyprland/src/desktop/DesktopTypes.hpp>
 #include <hyprland/src/managers/LayoutManager.hpp>
-#include <hyprland/src/desktop/DesktopTypes.hpp>
-#include <hyprland/src/managers/LayoutManager.hpp>
+#include <hyprland/src/managers/input/InputManager.hpp>
+#include <hyprland/src/config/ConfigManager.hpp>
+#include <hyprland/src/render/Renderer.hpp>
 #undef private
 #include "globals.hpp"
 
