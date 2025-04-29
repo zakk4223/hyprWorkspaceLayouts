@@ -365,8 +365,8 @@ void CWorkspaceLayout::switchWindows(PHLWINDOW pWindow, PHLWINDOW pWindow2) {
 
 	//Different layouts; hax
 
-	std::swap(pWindow2->m_pMonitor, pWindow->m_pMonitor);
-	std::swap(pWindow2->m_pWorkspace, pWindow->m_pWorkspace);
+	std::swap(pWindow2->m_monitor, pWindow->m_monitor);
+	std::swap(pWindow2->m_workspace, pWindow->m_workspace);
 
 
 	pWindow->setAnimationsToMove();
@@ -521,7 +521,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 		if (w.workspaceID == ws) {
 			if (w.layout) {
 				for (auto &win : g_pCompositor->m_windows) {
-					if ((win->workspaceID() != ws) || !win->m_bIsMapped || win->isHidden())
+					if ((win->workspaceID() != ws) || !win->m_isMapped || win->isHidden())
 						continue;
 					w.layout->onWindowRemoved(win);
 				}
@@ -532,7 +532,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 			w.layout = layout;
 			w.isDefault = isDefault;
 			for (auto &win : g_pCompositor->m_windows) {
-				if ((win->workspaceID() != ws) || !win->m_bIsMapped || win->isHidden())
+				if ((win->workspaceID() != ws) || !win->m_isMapped || win->isHidden())
 					continue;
 				onWindowCreated(win);
 			}
@@ -545,7 +545,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout *layout, const int& ws,
 	WSENTRY->layout = layout;
 	WSENTRY->isDefault = isDefault;
 	for (auto &win : g_pCompositor->m_windows) {
-		if ((win->workspaceID() != ws) || !win->m_bIsMapped || win->isHidden())
+		if ((win->workspaceID() != ws) || !win->m_isMapped || win->isHidden())
 			continue;
 		onWindowCreated(win);
 	}
