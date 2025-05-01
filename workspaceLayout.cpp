@@ -189,12 +189,12 @@ void CWorkspaceLayout::onBeginDragWindow() {
     if (layout) {
         layout->onBeginDragWindow();
 
-        m_vBeginDragXY                     = layout->m_vBeginDragXY;
-        m_vBeginDragPositionXY             = layout->m_vBeginDragPositionXY;
-        m_vBeginDragSizeXY                 = layout->m_vBeginDragSizeXY;
-        m_vLastDragXY                      = layout->m_vLastDragXY;
-        m_vDraggingWindowOriginalFloatSize = layout->m_vDraggingWindowOriginalFloatSize;
-        m_eGrabbedCorner                   = layout->m_eGrabbedCorner;
+        m_beginDragXY                     = layout->m_beginDragXY;
+        m_beginDragPositionXY             = layout->m_beginDragPositionXY;
+        m_beginDragSizeXY                 = layout->m_beginDragSizeXY;
+        m_lastDragXY                      = layout->m_lastDragXY;
+        m_draggingWindowOriginalFloatSize = layout->m_draggingWindowOriginalFloatSize;
+        m_grabbedCorner                   = layout->m_grabbedCorner;
     }
 }
 
@@ -227,12 +227,12 @@ void CWorkspaceLayout::onEndDragWindow() {
     IHyprLayout* layout = getLayoutForWorkspace(WSID);
 
     if (layout) {
-        layout->m_vBeginDragXY                     = m_vBeginDragXY;
-        layout->m_vBeginDragPositionXY             = m_vBeginDragPositionXY;
-        layout->m_vBeginDragSizeXY                 = m_vBeginDragSizeXY;
-        layout->m_vLastDragXY                      = m_vLastDragXY;
-        layout->m_vDraggingWindowOriginalFloatSize = m_vDraggingWindowOriginalFloatSize;
-        layout->m_eGrabbedCorner                   = m_eGrabbedCorner;
+        layout->m_beginDragXY                     = m_beginDragXY;
+        layout->m_beginDragPositionXY             = m_beginDragPositionXY;
+        layout->m_beginDragSizeXY                 = m_beginDragSizeXY;
+        layout->m_lastDragXY                      = m_lastDragXY;
+        layout->m_draggingWindowOriginalFloatSize = m_draggingWindowOriginalFloatSize;
+        layout->m_grabbedCorner                   = m_grabbedCorner;
 
         layout->onEndDragWindow();
         auto WDATA = getDataFromWindow(pWindow);
@@ -251,16 +251,16 @@ void CWorkspaceLayout::onMouseMove(const Vector2D& vec) {
     IHyprLayout* layout = getLayoutForWorkspace(WSID);
 
     if (layout) {
-        layout->m_vBeginDragXY                     = m_vBeginDragXY;
-        layout->m_vBeginDragPositionXY             = m_vBeginDragPositionXY;
-        layout->m_vBeginDragSizeXY                 = m_vBeginDragSizeXY;
-        layout->m_vLastDragXY                      = m_vLastDragXY;
-        layout->m_vDraggingWindowOriginalFloatSize = m_vDraggingWindowOriginalFloatSize;
-        layout->m_eGrabbedCorner                   = m_eGrabbedCorner;
+        layout->m_beginDragXY                     = m_beginDragXY;
+        layout->m_beginDragPositionXY             = m_beginDragPositionXY;
+        layout->m_beginDragSizeXY                 = m_beginDragSizeXY;
+        layout->m_lastDragXY                      = m_lastDragXY;
+        layout->m_draggingWindowOriginalFloatSize = m_draggingWindowOriginalFloatSize;
+        layout->m_grabbedCorner                   = m_grabbedCorner;
 
         layout->onMouseMove(vec);
 
-        m_vLastDragXY = layout->m_vLastDragXY;
+        m_lastDragXY = layout->m_lastDragXY;
     }
 }
 
