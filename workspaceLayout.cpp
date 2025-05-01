@@ -146,15 +146,15 @@ void CWorkspaceLayout::recalculateMonitor(const MONITORID& monID) {
     if (!PMONITOR)
         return;
 
-    if (PMONITOR->activeSpecialWorkspace) {
-        const auto PSPWS = PMONITOR->activeSpecialWorkspace;
+    if (PMONITOR->m_activeSpecialWorkspace) {
+        const auto PSPWS = PMONITOR->m_activeSpecialWorkspace;
         if (PSPWS) {
             IHyprLayout* layout = getLayoutForWorkspace(PSPWS->m_id);
             if (layout)
                 return layout->recalculateMonitor(monID);
         }
     }
-    const auto PWORKSPACE = PMONITOR->activeWorkspace;
+    const auto PWORKSPACE = PMONITOR->m_activeWorkspace;
     if (!PWORKSPACE)
         return;
     IHyprLayout* layout = getLayoutForWorkspace(PWORKSPACE->m_id);
@@ -354,7 +354,7 @@ SWindowRenderLayoutHints CWorkspaceLayout::requestRenderHints(PHLWINDOW pWindow)
 Vector2D CWorkspaceLayout::predictSizeForNewWindowTiled() {
     if (!g_pCompositor->m_lastMonitor)
         return {};
-    auto const   WSID   = g_pCompositor->m_lastMonitor->activeWorkspace->m_id;
+    auto const   WSID   = g_pCompositor->m_lastMonitor->m_activeWorkspace->m_id;
     IHyprLayout* layout = getLayoutForWorkspace(WSID);
     if (layout)
         return layout->predictSizeForNewWindowTiled();
