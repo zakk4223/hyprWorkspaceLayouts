@@ -181,7 +181,7 @@ void CWorkspaceLayout::changeWindowFloatingMode(PHLWINDOW pWindow) {
 }
 
 void CWorkspaceLayout::onBeginDragWindow() {
-    const auto pWindow = g_pInputManager->currentlyDraggedWindow.lock();
+    const auto pWindow = g_pInputManager->m_currentlyDraggedWindow.lock();
     if (!pWindow)
         return; //??
     auto const   WSID   = pWindow->workspaceID();
@@ -220,7 +220,7 @@ void CWorkspaceLayout::moveActiveWindow(const Vector2D& vec, PHLWINDOW pWindow) 
 
 void CWorkspaceLayout::onEndDragWindow() {
 
-    const auto pWindow = g_pInputManager->currentlyDraggedWindow.lock();
+    const auto pWindow = g_pInputManager->m_currentlyDraggedWindow.lock();
     if (!validMapped(pWindow))
         return; //??
     auto const   WSID   = pWindow->workspaceID();
@@ -244,7 +244,7 @@ void CWorkspaceLayout::onEndDragWindow() {
 }
 
 void CWorkspaceLayout::onMouseMove(const Vector2D& vec) {
-    const auto pWindow = g_pInputManager->currentlyDraggedWindow.lock();
+    const auto pWindow = g_pInputManager->m_currentlyDraggedWindow.lock();
     if (!validMapped(pWindow))
         return; //??
     auto const   WSID   = pWindow->workspaceID();
@@ -569,7 +569,7 @@ void CWorkspaceLayout::setDefaultLayout(std::string name) {
 }
 
 IHyprLayout* CWorkspaceLayout::getLayoutByName(const std::string& name) {
-    for (auto& layoutp : g_pLayoutManager->m_vLayouts) {
+    for (auto& layoutp : g_pLayoutManager->m_layouts) {
         if (layoutp.first == name) {
             return layoutp.second;
         }
@@ -591,7 +591,7 @@ void CWorkspaceLayout::setupLayoutList() {
     }
 
     if (!m_vLayoutList.size()) {
-        for (auto& layoutp : g_pLayoutManager->m_vLayouts) {
+        for (auto& layoutp : g_pLayoutManager->m_layouts) {
             if (layoutp.second->getLayoutName() != getLayoutName())
                 m_vLayoutList.push_back(layoutp.second);
         }
