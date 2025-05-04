@@ -37,7 +37,7 @@ namespace {
 
     PHLWORKSPACE hkCreateWorkspace(void* thisptr, const int& id, const int& monid, const std::string& name) {
 
-        PHLWORKSPACE ret = (*(origCreateWorkspace)g_pCreateWorkspaceHook->m_pOriginal)(thisptr, id, monid, name);
+        PHLWORKSPACE ret = (*(origCreateWorkspace)g_pCreateWorkspaceHook->m_original)(thisptr, id, monid, name);
         WSWorkspaceCreated(ret);
         return ret;
     }
@@ -47,7 +47,7 @@ namespace {
 
     bool hkAddLayout(void* thisptr, const std::string& name, IHyprLayout* layout) {
 
-        bool ret = (*(origAddLayout)g_pAddLayoutHook->m_pOriginal)(thisptr, name, layout);
+        bool ret = (*(origAddLayout)g_pAddLayoutHook->m_original)(thisptr, name, layout);
         WSLayoutsChanged();
 
         return ret;
@@ -62,7 +62,7 @@ namespace {
         if (layout == (IHyprLayout*)g_pWorkspaceLayout.get()) {
             layout->onDisable();
         }
-        bool ret = (*(origRemoveLayout)g_pRemoveLayoutHook->m_pOriginal)(thisptr, layout);
+        bool ret = (*(origRemoveLayout)g_pRemoveLayoutHook->m_original)(thisptr, layout);
         WSLayoutsChanged();
         return ret;
     }
