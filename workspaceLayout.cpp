@@ -525,6 +525,8 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout* layout, const int& ws,
     for (auto& w : m_vWorkspacesData) {
         if (w.workspaceID == ws) {
             if (w.layout) {
+                if (w.layout == layout)
+                  return;
                 for (auto& win : g_pCompositor->m_windows) {
                     if ((win->workspaceID() != ws) || !win->m_isMapped || win->isHidden())
                         continue;
