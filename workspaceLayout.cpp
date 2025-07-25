@@ -33,8 +33,8 @@ void CWorkspaceLayout::setupWorkspace(PHLWORKSPACE pWorkspace) {
 }
 void CWorkspaceLayout::onEnable() {
 
-    for (auto& wsp : g_pCompositor->m_workspaces) {
-        setupWorkspace(wsp);
+    for (auto& wsp : g_pCompositor->getWorkspaces()) {
+        setupWorkspace(wsp.lock());
     }
 }
 
