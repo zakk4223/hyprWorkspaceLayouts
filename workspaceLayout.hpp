@@ -72,7 +72,7 @@ class CWorkspaceLayout : public IHyprLayout {
 
     void                             setDefaultLayout(std::string name);
     void                             clearLayoutMaps();
-    void                             setupWorkspace(PHLWORKSPACE pWorkspace);
+    void                             setupWorkspace(PHLWORKSPACEREF pWorkspaceRef);
     void                             setupLayoutList();
 
   private:

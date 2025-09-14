@@ -24,7 +24,7 @@ namespace {
     }
 
     void WSWorkspaceCreated(PHLWORKSPACE pWorkspace) {
-        g_pWorkspaceLayout->setupWorkspace(pWorkspace);
+        g_pWorkspaceLayout->setupWorkspace(PHLWORKSPACEREF{pWorkspace});
     }
 
     void WSLayoutsChanged() {
