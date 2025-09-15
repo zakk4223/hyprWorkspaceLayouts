@@ -19,6 +19,29 @@ plugins = [
 
 Then update via the `hyprload,update` dispatcher.
 
+## NixOS Installation
+
+Add this flake to your inputs, note that using a mismatched/unsupported Hyprland release will fail to build or load the plugin:
+
+```nix
+inputs = {
+    hyprland.url = "github:hyprwm/Hyprland"; # follows development branch of hyprland
+    hyprWorkspaceLayouts = {
+        url = "github:zakk4223/hyprWorkspaceLayouts";
+        inputs.hyprland.follows = "hyprland"; # to make sure that the plugin is built for the correct version of hyprland
+    };
+};
+```
+
+Then, in your `home-manager` config, add the plugin:
+
+```nix
+wayland.windowManager.hyprland = {
+    enable = true;
+    plugins = [ inputs.hyprWorkspaceLayouts.packages.${pkgs.system}.default ];
+};
+```
+
 ## Manual installation
 
 1. Build the plugin 
