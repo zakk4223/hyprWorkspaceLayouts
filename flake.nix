@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.follows = "hyprland/nixpkgs";
     systems.follows = "hyprland/systems";
-    hyprland.url = "github:hyprwm/Hyprland";
+    hyprland.url = "github:hyprwm/Hyprland/v0.51.0";
   };
 
   outputs = {
