@@ -2,8 +2,7 @@
   description = "A plugin to use different layouts on workspaces";
 
   inputs = {
-    nixpkgs.follows = "hyprland/nixpkgs";
-    systems.follows = "hyprland/systems";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     hyprland.url = "github:hyprwm/Hyprland/v0.51.0";
   };
 
@@ -18,28 +17,33 @@
   in {
     packages = eachSystem (system: {
       default = self.packages.${system}.hyprWorkspaceLayouts;
-      hyprWorkspaceLayouts = pkgsFor.${system}.callPackage ({
-        lib,
-        hyprlandPlugins,
-      }:
-        hyprlandPlugins.mkHyprlandPlugin inputs.hyprland.packages.${system}.hyprland {
-          pluginName = "hyprWorkspaceLayouts";
-          version = "0-unstable-2025-09-15";
+      hyprWorkspaceLayouts = let
+        inherit (inputs.hyprland.packages.${system}) hyprland;
+        inherit (pkgsFor.${system}) stdenvNoCC gcc14 lib;
 
+        name = "hyprWorkspaceLayouts";
+      in
+        stdenvNoCC.mkDerivation {
+          inherit name;
+          pname = name;
+          version = "0-unstable-2025-09-15";
           src = ./.;
 
-          nativeBuildInputs = [pkgsFor.${system}.gnumake];
+          inherit (hyprland) buildInputs;
+          nativeBuildInputs = hyprland.nativeBuildInputs ++ [hyprland gcc14];
+          enableParallelBuilding = true;
 
-          buildPhase = ''
-            runHook preBuild
-            make all
-            runHook postBuild
-          '';
+          dontUseCmakeConfigure = true;
+          dontUseMesonConfigure = true;
+          dontUseNinjaBuild = true;
+          dontUseNinjaInstall = true;
 
           installPhase = ''
             runHook preInstall
-            mkdir -p $out/lib
-            mv workspaceLayoutPlugin.so $out/lib/libhyprWorkspaceLayouts.so
+
+            mkdir -p "$out/lib"
+            mv workspaceLayoutPlugin.so "$out/lib/lib${name}.so"
+
             runHook postInstall
           '';
 
@@ -50,11 +54,11 @@
             platforms = lib.platforms.linux;
             maintainers = [];
           };
-        }) {};
+        };
     });
 
     devShells = eachSystem (system: {
-      default = pkgsFor.${system}.mkShell.override {stdenv = pkgsFor.${system}.gcc14Stdenv;} {
+      default = pkgsFor.${system}.mkShell {
         name = "hyprWorkspaceLayouts";
         buildInputs = [inputs.hyprland.packages.${system}.hyprland];
         inputsFrom = [inputs.hyprland.packages.${system}.hyprland];
