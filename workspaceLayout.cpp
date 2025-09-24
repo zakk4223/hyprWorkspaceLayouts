@@ -17,7 +17,8 @@ SWorkspaceLayoutWindowData* CWorkspaceLayout::getDataFromWindow(PHLWINDOW pWindo
     return WINDOWDATA;
 }
 
-void CWorkspaceLayout::setupWorkspace(PHLWORKSPACE pWorkspace) {
+void CWorkspaceLayout::setupWorkspace(PHLWORKSPACEREF pWorkspaceRef) {
+    auto pWorkspace = pWorkspaceRef.lock();
     if (!pWorkspace) {
         //??
         return;
@@ -34,7 +35,7 @@ void CWorkspaceLayout::setupWorkspace(PHLWORKSPACE pWorkspace) {
 void CWorkspaceLayout::onEnable() {
 
     for (auto& wsp : g_pCompositor->getWorkspaces()) {
-        setupWorkspace(wsp.lock());
+        setupWorkspace(wsp);
     }
 }
 
@@ -526,7 +527,7 @@ void CWorkspaceLayout::setLayoutForWorkspace(IHyprLayout* layout, const int& ws,
         if (w.workspaceID == ws) {
             if (w.layout) {
                 if (w.layout == layout)
-                  return;
+                    return;
                 for (auto& win : g_pCompositor->m_windows) {
                     if ((win->workspaceID() != ws) || !win->m_isMapped || win->isHidden())
                         continue;
