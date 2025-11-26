@@ -1,4 +1,5 @@
 #include "workspaceLayout.hpp"
+#include "src/desktop/state/FocusState.hpp"
 
 SWorkspaceLayoutWindowData* CWorkspaceLayout::getDataFromWindow(PHLWINDOW pWindow, bool create) {
     for (auto& nd : m_vWorkspaceWindowData) {
@@ -200,7 +201,7 @@ void CWorkspaceLayout::onBeginDragWindow() {
 }
 
 void CWorkspaceLayout::resizeActiveWindow(const Vector2D& vec, eRectCorner corner, PHLWINDOW pWindow) {
-    const auto PWINDOW = pWindow ? pWindow : g_pCompositor->m_lastWindow.lock();
+    const auto PWINDOW = pWindow ? pWindow : Desktop::focusState()->window();
     if (!validMapped(PWINDOW))
         return; //??
     auto const   WSID   = PWINDOW->workspaceID();
@@ -210,7 +211,7 @@ void CWorkspaceLayout::resizeActiveWindow(const Vector2D& vec, eRectCorner corne
 }
 
 void CWorkspaceLayout::moveActiveWindow(const Vector2D& vec, PHLWINDOW pWindow) {
-    const auto PWINDOW = pWindow ? pWindow : g_pCompositor->m_lastWindow.lock();
+    const auto PWINDOW = pWindow ? pWindow : Desktop::focusState()->window();
     if (!validMapped(PWINDOW))
         return; //??
     auto const   WSID   = PWINDOW->workspaceID();
@@ -353,9 +354,9 @@ SWindowRenderLayoutHints CWorkspaceLayout::requestRenderHints(PHLWINDOW pWindow)
 }
 
 Vector2D CWorkspaceLayout::predictSizeForNewWindowTiled() {
-    if (!g_pCompositor->m_lastMonitor)
+    if (!Desktop::focusState()->monitor())
         return {};
-    auto const   WSID   = g_pCompositor->m_lastMonitor->m_activeWorkspace->m_id;
+    auto const   WSID   = Desktop::focusState()->monitor()->m_activeWorkspace->m_id;
     IHyprLayout* layout = getLayoutForWorkspace(WSID);
     if (layout)
         return layout->predictSizeForNewWindowTiled();
