@@ -10,6 +10,7 @@
 #define private public
 #include <hyprland/src/Compositor.hpp>
 #include <hyprland/src/desktop/DesktopTypes.hpp>
+#include <hyprland/src/desktop/state/FocusState.hpp>
 #include <hyprland/src/managers/LayoutManager.hpp>
 #include <hyprland/src/managers/input/InputManager.hpp>
 #include <hyprland/src/config/ConfigManager.hpp>
