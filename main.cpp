@@ -71,6 +71,14 @@ namespace {
 APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
     PHANDLE = handle;
 
+    // check that header version aligns with running version
+    const std::string COMPOSITOR_HASH = __hyprland_api_get_hash();
+    const std::string CLIENT_HASH = __hyprland_api_get_client_hash();
+    if (COMPOSITOR_HASH != CLIENT_HASH) {
+        HyprlandAPI::addNotification(PHANDLE, "[workspaceLayouts] failed to load, version mismatch! (see logs)", CHyprColor{1.0, 0.2, 0.2, 1.0}, 5000);
+        throw std::runtime_error(std::format("version mismatch, built against: {}, running compositor: {}", CLIENT_HASH, COMPOSITOR_HASH));
+    }
+
     HyprlandAPI::addConfigValue(PHANDLE, "plugin:wslayout:default_layout", Hyprlang::STRING{"dwindle"});
     HyprlandAPI::addConfigValue(PHANDLE, "plugin:wslayout:layouts", Hyprlang::STRING(""));
 
