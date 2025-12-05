@@ -32,14 +32,13 @@ namespace {
         g_pWorkspaceLayout->onEnable();
     }
 
-    inline CFunctionHook* g_pCreateWorkspaceHook = nullptr;
-    typedef PHLWORKSPACE (*origCreateWorkspace)(void*, const int&, const int&, const std::string&);
+    inline CFunctionHook* g_pRegisterWorkspaceHook = nullptr;
+    typedef void (*origRegisterWorkspace)(void*, PHLWORKSPACE);
 
-    PHLWORKSPACE hkCreateWorkspace(void* thisptr, const int& id, const int& monid, const std::string& name) {
+    void hkRegisterWorkspace(void* thisptr, PHLWORKSPACE w) {
+        (*(origRegisterWorkspace)g_pRegisterWorkspaceHook->m_original)(thisptr, w);
 
-        PHLWORKSPACE ret = (*(origCreateWorkspace)g_pCreateWorkspaceHook->m_original)(thisptr, id, monid, name);
-        WSWorkspaceCreated(ret);
-        return ret;
+        WSWorkspaceCreated(w);
     }
 
     inline CFunctionHook* g_pAddLayoutHook = nullptr;
@@ -82,9 +81,9 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
     HyprlandAPI::addConfigValue(PHANDLE, "plugin:wslayout:default_layout", Hyprlang::STRING{"dwindle"});
     HyprlandAPI::addConfigValue(PHANDLE, "plugin:wslayout:layouts", Hyprlang::STRING(""));
 
-    static const auto WSCREATEMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "createNewWorkspace");
-    g_pCreateWorkspaceHook            = HyprlandAPI::createFunctionHook(PHANDLE, WSCREATEMETHODS[0].address, (void*)&hkCreateWorkspace);
-    g_pCreateWorkspaceHook->hook();
+    static const auto WSREGISTERMETHODS = HyprlandAPI::findFunctionsByName(PHANDLE, "registerWorkspace");
+    g_pRegisterWorkspaceHook            = HyprlandAPI::createFunctionHook(PHANDLE, WSREGISTERMETHODS[0].address, (void*)&hkRegisterWorkspace);
+    g_pRegisterWorkspaceHook->hook();
 
     static auto PCRCB = HyprlandAPI::registerCallbackDynamic(PHANDLE, "preConfigReload", [&](void* self, SCallbackInfo&, std::any data) { WSConfigPreload(); });
 
