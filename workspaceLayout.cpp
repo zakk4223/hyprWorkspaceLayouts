@@ -1,5 +1,6 @@
 #include "workspaceLayout.hpp"
-#include "src/desktop/state/FocusState.hpp"
+#include <hyprland/src/debug/log/Logger.hpp>
+#include <hyprland/src/desktop/state/FocusState.hpp>
 
 SWorkspaceLayoutWindowData* CWorkspaceLayout::getDataFromWindow(PHLWINDOW pWindow, bool create) {
     for (auto& nd : m_vWorkspaceWindowData) {
@@ -279,7 +280,7 @@ std::any CWorkspaceLayout::layoutMessage(SLayoutMessageHeader header, std::strin
     CVarList vars(message, 0, ' ');
 
     if (vars.size() < 1 || vars[0].empty()) {
-        Debug::log(ERR, "layoutmsg called without params");
+        Log::logger->log(Log::ERR, "layoutmsg called without params");
         return 0;
     }
 
