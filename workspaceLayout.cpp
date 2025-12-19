@@ -1,6 +1,6 @@
 #include "workspaceLayout.hpp"
-#include "src/debug/log/Logger.hpp"
-#include "src/desktop/state/FocusState.hpp"
+#include <hyprland/src/debug/log/Logger.hpp>
+#include <hyprland/src/desktop/state/FocusState.hpp>
 
 SWorkspaceLayoutWindowData* CWorkspaceLayout::getDataFromWindow(PHLWINDOW pWindow, bool create) {
     for (auto& nd : m_vWorkspaceWindowData) {
