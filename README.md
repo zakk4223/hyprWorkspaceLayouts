@@ -1,10 +1,9 @@
 # Workspace and monitor specific window layouts for Hyprland 
 
+> [!IMPORTANT]
+> Starting with version `0.54.0`, Hyprland has inbuilt support for per-workspace layouts, making this plugin obsolete. For more info, have a look at the [example](https://wiki.hypr.land/Configuring/Uncommon-tips--tricks/#per-workspace-layouts) in the Hyprland wiki.
 
 Do you wish you could run different window tiling layouts on individual workspaces? This plugin makes it possible!
-
-> [!NOTE]
-> If you would like to see per-workspace layouts implemented in hyprland itself, please add a reaction (👍) to [the corresponding issue](https://github.com/hyprwm/Hyprland/issues/10293).
 
 ## Using hyprpm, Hyprland's official plugin manager (recommended)
 1. Run `hyprpm add https://github.com/zakk4223/hyprWorkspaceLayouts` and wait for hyprpm to build the plugin.
