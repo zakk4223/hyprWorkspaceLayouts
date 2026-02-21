@@ -8,6 +8,7 @@ Do you wish you could run different window tiling layouts on individual workspac
 ## Using hyprpm, Hyprland's official plugin manager (recommended)
 1. Run `hyprpm add https://github.com/zakk4223/hyprWorkspaceLayouts` and wait for hyprpm to build the plugin.
 2. Run `hyprpm enable hyprWorkspaceLayouts`
+3. Add `exec-once = hyprpm reload -n` to your `hyprland.conf` to make sure the plugins are loaded into Hyprland at boot.*`-n` will make hyprpm send a notification if anything goes wrong (e.g. update needed)*
 
 
 ## Using [hyprload](https://github.com/Duckonaut/hyprload)
